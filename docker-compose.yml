@@ -1,0 +1,17 @@
+services:
+  api:
+    build: .
+    environment:
+      DOCMIND_APP_MODE: lite
+      DOCMIND_DATA_DIR: /var/lib/docmind
+      DOCMIND_LOG_FORMAT: json
+    ports:
+      - "8000:8000"
+    volumes:
+      - docmind-data:/var/lib/docmind
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+volumes:
+  docmind-data:

@@ -1,0 +1,14 @@
+.git
+.github
+.venv
+__pycache__
+*.pyc
+.env
+artifacts
+data/uploads
+data/indexes
+data/logs
+data/*.db
+models
+.idea
+.vscode

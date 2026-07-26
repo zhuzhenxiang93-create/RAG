@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="DocMind-RAG 企业文档智能分析演示台">
+  <title>DocMind · 企业知识分析台</title>
+  <link rel="stylesheet" href="/ui/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#overview" aria-label="DocMind 首页">
+        <span class="brand-mark">D</span>
+        <span><strong>DocMind</strong><small>RAG WORKBENCH</small></span>
+      </a>
+
+      <nav aria-label="主导航">
+        <button class="nav-item active" data-view="overview"><span>01</span>工作台</button>
+        <button class="nav-item" data-view="documents"><span>02</span>文档库</button>
+        <button class="nav-item" data-view="qa"><span>03</span>可信问答</button>
+        <button class="nav-item" data-view="evaluation"><span>04</span>评测中心</button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="system-state">
+          <span class="pulse"></span>
+          <div><strong id="system-status">正在连接</strong><small id="system-meta">检查服务状态…</small></div>
+        </div>
+        <a href="/docs" target="_blank" rel="noreferrer">打开 API 文档 ↗</a>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">ENTERPRISE KNOWLEDGE INTELLIGENCE</p>
+          <h1 id="page-title">文档智能工作台</h1>
+        </div>
+        <div class="top-actions">
+          <span class="mode-badge" id="mode-badge">LITE</span>
+          <button class="button secondary" id="bootstrap-button">载入演示语料</button>
+        </div>
+      </header>
+
+      <div id="toast-region" class="toast-region" aria-live="polite"></div>
+
+      <section class="view active" id="view-overview">
+        <div class="hero-grid">
+          <article class="hero-card">
+            <p class="eyebrow light">DOCUMENT → EVIDENCE → DECISION</p>
+            <h2>让复杂文档<br>变成可核验的答案</h2>
+            <p>面向企业制度、技术手册与法律材料的统一解析、混合检索和可信问答平台。</p>
+            <div class="hero-actions">
+              <button class="button light" data-go="qa">开始提问</button>
+              <button class="text-button" data-go="documents">管理知识库 →</button>
+            </div>
+            <div class="hero-orbit" aria-hidden="true"><span></span><span></span><span></span></div>
+          </article>
+
+          <div class="metric-grid">
+            <article class="metric-card accent"><span>知识库文档</span><strong id="metric-documents">—</strong><small>已解析并可检索</small></article>
+            <article class="metric-card"><span>可检索片段</span><strong id="metric-chunks">—</strong><small>Parent-Child 结构</small></article>
+            <article class="metric-card"><span>运行模式</span><strong id="metric-mode">—</strong><small>按需加载重模型</small></article>
+            <article class="metric-card dark"><span>检索策略</span><strong>5</strong><small>BM25 / Dense / RRF</small></article>
+          </div>
+        </div>
+
+        <div class="section-heading">
+          <div><p class="eyebrow">EXPLAINABLE PIPELINE</p><h2>一次回答，四层可解释</h2></div>
+          <span>每个阶段均可单独观察与评测</span>
+        </div>
+        <div class="pipeline">
+          <article><b>01</b><span class="pipeline-icon">文</span><h3>结构化解析</h3><p>保留页码、章节、表格和父子块关系。</p></article>
+          <i>→</i>
+          <article><b>02</b><span class="pipeline-icon">检</span><h3>自适应检索</h3><p>根据问题类型动态路由稀疏与稠密通道。</p></article>
+          <i>→</i>
+          <article><b>03</b><span class="pipeline-icon">证</span><h3>证据分析</h3><p>标注支持、矛盾和无关证据，检测版本冲突。</p></article>
+          <i>→</i>
+          <article><b>04</b><span class="pipeline-icon">答</span><h3>可信决策</h3><p>按证据强度回答、澄清或拒答，并返回引用。</p></article>
+        </div>
+
+        <div class="overview-lower">
+          <article class="panel">
+            <div class="panel-head"><div><p class="eyebrow">QUICK DEMO</p><h3>建议演示问题</h3></div><button class="text-button dark-text" data-go="qa">全部尝试 →</button></div>
+            <div class="prompt-list" id="overview-prompts"></div>
+          </article>
+          <article class="panel readiness">
+            <div class="panel-head"><div><p class="eyebrow">CAPABILITY</p><h3>运行能力</h3></div><span class="live-label">LIVE</span></div>
+            <div id="capability-list" class="capability-list"><div class="skeleton wide"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="view-documents">
+        <div class="split-layout">
+          <article class="panel upload-panel">
+            <div class="panel-head"><div><p class="eyebrow">INGESTION</p><h2>导入企业文档</h2></div><span class="file-support">PDF · DOCX · XLSX · TXT · MD</span></div>
+            <label class="dropzone" id="dropzone">
+              <input type="file" id="file-input" accept=".pdf,.docx,.xlsx,.txt,.md" multiple>
+              <span class="upload-symbol">＋</span>
+              <strong>拖放文档到这里</strong>
+              <small>或点击选择文件，单文件不超过 50 MB</small>
+            </label>
+            <div id="upload-queue" class="upload-queue"></div>
+          </article>
+          <aside class="panel mini-guide">
+            <p class="eyebrow">PARSING POLICY</p>
+            <h3>解析不是“抽出一段文本”</h3>
+            <ul>
+              <li><span>01</span>页码与章节定位</li>
+              <li><span>02</span>表格转结构化 Markdown</li>
+              <li><span>03</span>标题感知父子分块</li>
+              <li><span>04</span>SHA-256 内容追踪</li>
+            </ul>
+          </aside>
+        </div>
+
+        <article class="panel document-panel">
+          <div class="panel-head">
+            <div><p class="eyebrow">KNOWLEDGE BASE</p><h2>文档库 <span id="document-count-label">0</span></h2></div>
+            <div class="table-actions"><input id="document-filter" type="search" placeholder="按文件名筛选"><button class="button secondary small" id="rebuild-button">重建索引</button></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>文档</th><th>类型</th><th>结构</th><th>大小</th><th>状态</th><th></th></tr></thead>
+              <tbody id="document-table"><tr><td colspan="6"><div class="empty-state">正在读取文档库…</div></td></tr></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section class="view" id="view-qa">
+        <div class="qa-layout">
+          <div class="qa-main">
+            <article class="panel query-panel">
+              <div class="panel-head">
+                <div><p class="eyebrow">TRUSTWORTHY QA</p><h2>向知识库提问</h2></div>
+                <label class="strategy-field">检索策略
+                  <select id="strategy-select">
+                    <option value="adaptive">Adaptive</option>
+                    <option value="bm25">BM25</option>
+                    <option value="dense">Lite Dense</option>
+                    <option value="rrf">RRF</option>
+                    <option value="rrf_rerank">RRF + Rerank</option>
+                  </select>
+                </label>
+              </div>
+              <div class="query-box">
+                <textarea id="query-input" rows="3" placeholder="例如：SEV-1 生产事故要求多少分钟内响应？"></textarea>
+                <button class="send-button" id="ask-button" aria-label="提交问题">→</button>
+              </div>
+              <div class="query-examples" id="query-examples"></div>
+            </article>
+
+            <article class="panel answer-panel empty-answer" id="answer-panel">
+              <div class="answer-placeholder">
+                <span>?</span><h3>答案会在这里生成</h3><p>系统会同时展示决策、置信度、证据引用与冲突原因。</p>
+              </div>
+              <div class="answer-content" hidden>
+                <div class="answer-meta">
+                  <span class="decision-badge" id="decision-badge">ANSWER</span>
+                  <span id="answer-confidence">置信度 —</span>
+                </div>
+                <h3 id="answer-title">系统回答</h3>
+                <p id="answer-text"></p>
+                <div class="reason-note"><strong>决策依据</strong><span id="answer-reason"></span></div>
+              </div>
+            </article>
+
+            <article class="panel" id="evidence-panel" hidden>
+              <div class="panel-head"><div><p class="eyebrow">CITATIONS</p><h3>证据引用</h3></div><span id="citation-count"></span></div>
+              <div class="evidence-list" id="evidence-list"></div>
+            </article>
+          </div>
+
+          <aside class="qa-side">
+            <article class="panel">
+              <div class="panel-head"><div><p class="eyebrow">CONFIDENCE</p><h3>置信度拆解</h3></div><strong class="score-ring" id="score-ring">—</strong></div>
+              <div class="confidence-list" id="confidence-list">
+                <p class="muted">提交问题后查看五维评分。</p>
+              </div>
+            </article>
+            <article class="panel route-panel">
+              <p class="eyebrow">QUERY ROUTER</p><h3>检索路由</h3>
+              <div id="route-content"><p class="muted">尚未执行检索。</p></div>
+            </article>
+            <article class="panel conflict-panel" id="conflict-panel" hidden>
+              <p class="eyebrow">CONFLICT WATCH</p><h3>发现证据冲突</h3>
+              <div id="conflict-list"></div>
+            </article>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" id="view-evaluation">
+        <div class="evaluation-hero">
+          <div><p class="eyebrow light">REPRODUCIBLE EVALUATION</p><h2>不靠主观 Demo，<br>用实验暴露系统边界。</h2></div>
+          <div><p>内置 7 篇文档、14 个标注问题，对五种检索策略和可信问答决策进行可复现实验。</p><button class="button light" id="evaluation-button">运行 Lite V1 评测</button></div>
+        </div>
+        <div class="eval-grid">
+          <article class="panel">
+            <div class="panel-head"><div><p class="eyebrow">RETRIEVAL ABLATION</p><h3>检索消融</h3></div><span id="eval-run-id">尚未运行</span></div>
+            <div id="retrieval-chart" class="chart-placeholder"><span>运行评测后生成对比图</span></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><div><p class="eyebrow">QA GUARDRAILS</p><h3>可信问答指标</h3></div><span>Precision / Recall</span></div>
+            <div id="qa-metrics" class="qa-metric-grid">
+              <div class="metric-tile"><span>决策准确率</span><strong>—</strong></div>
+              <div class="metric-tile"><span>拒答精确率</span><strong>—</strong></div>
+              <div class="metric-tile"><span>冲突召回率</span><strong>—</strong></div>
+              <div class="metric-tile"><span>引用召回率</span><strong>—</strong></div>
+            </div>
+          </article>
+        </div>
+        <article class="panel finding-panel">
+          <span class="finding-index">!</span>
+          <div><p class="eyebrow">HONEST FINDING</p><h3>当前小型精确查询语料中，BM25 是最强基线</h3><p>Lite Dense 使用确定性哈希向量，不等同于语义嵌入模型。项目保留负结果，并把真实 Embedding、Cross-Encoder 和更大独立测试集列为待测项。</p></div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="document-dialog">
+    <button class="dialog-close" aria-label="关闭">×</button>
+    <p class="eyebrow">DOCUMENT DETAIL</p>
+    <h2 id="dialog-title">文档详情</h2>
+    <div id="dialog-body"></div>
+  </dialog>
+
+  <script src="/ui/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+[
+  {
+    "id": "q01",
+    "query": "安全策略编号 SEC-2025-07 对生产密钥有什么要求？",
+    "query_type": "exact_lookup",
+    "answerable": true,
+    "gold_documents": ["security_policy.md"],
+    "gold_sections": ["凭据管理"],
+    "expected_decision": "answer"
+  },
+  {
+    "id": "q02",
+    "query": "常规密钥多久轮换一次？",
+    "query_type": "table_qa",
+    "answerable": true,
+    "gold_documents": ["security_policy.md"],
+    "gold_sections": ["轮换要求"],
+    "expected_decision": "answer"
+  },
+  {
+    "id": "q03",
+    "query": "哪种检索方法适合产品编号和错误码？",
+    "query_type": "semantic_qa",
+    "answerable": true,
+    "gold_documents": ["retrieval_guide.md"],
+    "gold_sections": ["检索策略"],
+    "expected_decision": "answer"
+  },
+  {
+    "id": "q04",
+    "query": "查询与文档用词不同时应该采用哪种检索？",
+    "query_type": "semantic_qa",
+    "answerable": true,
+    "gold_documents": ["retrieval_guide.md"],
+    "gold_sections": ["检索策略"],
+    "expected_decision": "answer"
+  },
+  {
+    "id": "q05",
+    "query": "RRF 为什么不直接相加 BM25 和 Dense 的原始分数？",
+    "query_type": "comparison",
+    "answerable": true,
+    "gold_documents": ["retrieval_guide.md"],
+    "gold_sections": ["检索策略"],
+    "expected_decision": "answer"
+  },
+  {
+    "id": "q06",
+    "query": "Parent-Child 分块中哪个块负责召回？",
+    "query_type": "exact_lookup",
+    "answerable": true,
+    "gold_documents": ["retrieval_guide.md"],
+    "gold_sections": ["Parent-Child"],
+    "expected_decision": "answer"
+  },
+  {
+    "id": "q07",
+    "query": "Recall@K 的定义是什么？",
+    "query_type": "exact_lookup",
+    "answerable": true,
+    "gold_documents": ["evaluation_handbook.md"],
+    "gold_sections": ["评测手册"],
+    "expected_decision": "answer"
+  },
+  {
+    "id": "q08",
+    "query": "自动生成的问题能否直接作为最终测试集？",
+    "query_type": "semantic_qa",
+    "answerable": true,
+    "gold_documents": ["evaluation_handbook.md"],
+    "gold_sections": ["数据划分"],
+    "expected_decision": "answer"
+  },
+  {
+    "id": "q09",
+    "query": "SEV-1 生产事故要求多少分钟内响应？",
+    "query_type": "table_qa",
+    "answerable": true,
+    "gold_documents": ["incident_response.md"],
+    "gold_sections": ["事件响应"],
+    "expected_decision": "answer"
+  },
+  {
+    "id": "q10",
+    "query": "事故恢复后几天内完成根因分析报告？",
+    "query_type": "table_qa",
+    "answerable": true,
+    "gold_documents": ["incident_response.md"],
+    "gold_sections": ["复盘"],
+    "expected_decision": "answer"
+  },
+  {
+    "id": "q11",
+    "query": "检索服务的负责人和 SLA 分别是什么？",
+    "query_type": "table_qa",
+    "answerable": true,
+    "gold_documents": ["service_catalog.md"],
+    "gold_sections": ["服务目录"],
+    "expected_decision": "answer"
+  },
+  {
+    "id": "q12",
+    "query": "比较 2024 和 2025 制度中用户操作日志保留期限的差异。",
+    "query_type": "comparison",
+    "answerable": true,
+    "gold_documents": ["retention_policy_2024.md", "retention_policy_2025.md"],
+    "gold_sections": ["数据保留"],
+    "expected_decision": "clarify"
+  },
+  {
+    "id": "q13",
+    "query": "量子发动机的最大推力是多少？",
+    "query_type": "semantic_qa",
+    "answerable": false,
+    "gold_documents": [],
+    "gold_sections": [],
+    "expected_decision": "abstain"
+  },
+  {
+    "id": "q14",
+    "query": "今天天气怎么样？",
+    "query_type": "out_of_scope",
+    "answerable": false,
+    "gold_documents": [],
+    "gold_sections": [],
+    "expected_decision": "abstain"
+  }
+]
