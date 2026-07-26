@@ -71,4 +71,7 @@ Example event:
 3. standard-library unit/integration tests;
 4. Lite Docker image build.
 
-The workflow is provided but remains unverified until the project is pushed to GitHub.
+The workflow was verified on GitHub Actions run `30195841724`: the test job completed
+successfully in 18 seconds and the Lite container build completed successfully in
+23 seconds. GitHub emitted a Node 20 deprecation compatibility warning for official
+actions, but it did not fail either job.

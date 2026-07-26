@@ -1,5 +1,7 @@
 # DocMind-RAG
 
+[![CI](https://github.com/zhuzhenxiang93-create/RAG/actions/workflows/ci.yml/badge.svg)](https://github.com/zhuzhenxiang93-create/RAG/actions/workflows/ci.yml)
+
 复杂企业文档的自适应检索与可信问答系统。
 
 当前版本已完成无密钥可运行的文档接入、混合检索、可信问答、可选法律插件、

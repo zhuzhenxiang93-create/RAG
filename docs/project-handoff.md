@@ -35,14 +35,13 @@ Verified:
 - optional legal asset validation without importing heavy dependencies;
 - Windows local virtual environment and browser workflow;
 - deterministic tests, syntax checks and credential pattern scan.
+- GitHub-hosted CI test job and Docker image build on run `30195841724`.
 
 Pending:
 
 - real legal model inference and held-out classification score;
 - production-grade embedding and Cross-Encoder evaluation;
 - OCR provider integration;
-- GitHub-hosted CI execution;
-- Docker build on a machine with Docker available;
 - large independent corpus and calibrated confidence threshold.
 
 ## Original project safety
