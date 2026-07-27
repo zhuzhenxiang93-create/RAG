@@ -1,0 +1,23 @@
+{
+  "base_model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "task": "causal_lm_structured_routing",
+  "max_length": 512,
+  "lora": {
+    "rank": 16,
+    "alpha": 32,
+    "dropout": 0.05,
+    "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj"]
+  },
+  "training": {
+    "epochs": 3,
+    "learning_rate": 0.0002,
+    "batch_size": 2,
+    "gradient_accumulation_steps": 8,
+    "seed": 42
+  },
+  "notes": [
+    "This is the initial reproducible configuration, not a claimed optimum.",
+    "Use --load-in-4bit only in a supported CUDA and bitsandbytes environment.",
+    "Official Redwood benchmark questions are evaluation-only."
+  ]
+}

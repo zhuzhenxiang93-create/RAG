@@ -1,0 +1,28 @@
+{
+  "predictions": [
+    {
+      "id": "smoke_q1",
+      "prediction": {
+        "question_type": "basic",
+        "sources": ["github"],
+        "multi_document": false,
+        "conflict_check": false,
+        "completeness_required": false,
+        "retrieval_depth": "shallow",
+        "answerability": "answerable"
+      }
+    },
+    {
+      "id": "smoke_q2",
+      "prediction": {
+        "question_type": "project_related",
+        "sources": ["slack", "gmail"],
+        "multi_document": true,
+        "conflict_check": false,
+        "completeness_required": true,
+        "retrieval_depth": "deep",
+        "answerability": "answerable"
+      }
+    }
+  ]
+}

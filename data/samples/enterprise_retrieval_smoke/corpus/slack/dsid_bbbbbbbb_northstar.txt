@@ -1,0 +1,4 @@
+Project Northstar Discussion
+
+The launch moved to 18 August because the identity migration failed its load test.
+Engineering and Customer Success approved the revised date.

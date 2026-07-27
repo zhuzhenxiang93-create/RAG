@@ -10,6 +10,8 @@ data/uploads/
 data/indexes/
 data/logs/
 data/intent/
+data/enterprise_router/
+data/enterprise_rag_bench/
 data/*.db
 models/
 artifacts/
