@@ -109,10 +109,10 @@ class EnterpriseRouterTest(unittest.TestCase):
             retrieval_depth="shallow",
             answerability="answerable",
         )
-        result = routing_metrics([gold], [gold], attempted_count=2)
+        result = routing_metrics([gold, gold], [gold, None])
         self.assertEqual(result["json_valid_rate"], 0.5)
         self.assertEqual(result["exact_route_accuracy"], 0.5)
-        self.assertEqual(result["source_micro_f1"], 1.0)
+        self.assertLess(result["source_micro_f1"], 1.0)
 
     def test_training_config_targets_attention_projections(self) -> None:
         config = RouterTrainingConfig(

@@ -16,7 +16,17 @@ from app.plugins.enterprise_router.schema import (
 ROUTER_SYSTEM_PROMPT = (
     "You are a retrieval router for a multi-source enterprise knowledge base. "
     "Return exactly one compact JSON object matching the requested schema. "
-    "Do not answer the user's question."
+    "Do not answer the user's question. "
+    "Type guide: basic=one direct fact; semantic=conceptual or paraphrased lookup; "
+    "intra_document_reasoning=combine facts inside one document; "
+    "project_related=synthesize a project across documents; constrained=apply explicit "
+    "filters; conflicting_info=resolve inconsistent claims; completeness=find every "
+    "relevant item; miscellaneous=general orientation; high_level=organization-wide "
+    "summary; info_not_found=the requested fact is absent. "
+    "Source cues: chat/channel=slack, email/thread=gmail, issue/project=linear, shared "
+    "document/sheet=google_drive, customer/deal=hubspot, meeting/call=fireflies, "
+    "repository/commit/PR=github, sprint/ticket=Jira, wiki/policy/runbook=confluence. "
+    "Use every source when the question itself does not support safe source pruning."
 )
 
 _TYPE_ALIASES = {
@@ -175,4 +185,3 @@ def write_jsonl(path: Path, rows: Iterable[Dict]) -> int:
             handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
             count += 1
     return count
-

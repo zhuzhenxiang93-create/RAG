@@ -1,0 +1,15 @@
+{
+  "dataset": "EnterpriseRAG-Bench-compatible router data",
+  "official_benchmark_role": "evaluation_only",
+  "train_source": "data\\enterprise_router_v2\\northstar_questions.jsonl",
+  "benchmark_source": "data\\enterprise_rag_bench\\benchmark\\questions.jsonl",
+  "source_sha256": "b42b42d9322cb7061a0ae9cb27d3c852c00e8c3ebf0411ea3607ad9d878aef90",
+  "seed": 42,
+  "validation_ratio": 0.15,
+  "counts": {
+    "train": 1700,
+    "validation": 300,
+    "benchmark": 500
+  },
+  "leakage_check": "passed"
+}

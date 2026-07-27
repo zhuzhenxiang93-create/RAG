@@ -109,6 +109,7 @@ def main() -> None:
     if args.load_in_4bit:
         model = prepare_model_for_kbit_training(model)
     model = get_peft_model(model, build_lora_config(config))
+    trainable_parameters, all_parameters = model.get_nb_trainable_parameters()
     model.print_trainable_parameters()
 
     columns = ["prompt", "target"]
@@ -161,6 +162,11 @@ def main() -> None:
         "alpha": config.alpha,
         "target_modules": config.target_modules,
         "load_in_4bit": args.load_in_4bit,
+        "trainable_parameters": trainable_parameters,
+        "all_parameters": all_parameters,
+        "trainable_fraction_percent": round(
+            100.0 * trainable_parameters / all_parameters, 6
+        ),
         "train_samples": len(train_dataset),
         "validation_samples": len(validation_dataset),
     }
@@ -172,4 +178,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

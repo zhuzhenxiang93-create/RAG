@@ -28,6 +28,7 @@ def main() -> None:
         help="Load the base model in NF4 for evaluation on limited VRAM.",
     )
     parser.add_argument("--max-new-tokens", type=int, default=220)
+    parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument(
         "--offline",
         action="store_true",
@@ -69,6 +70,7 @@ def main() -> None:
     )
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.padding_side = "left"
     quantization_config = (
         BitsAndBytesConfig(
             load_in_4bit=True,
@@ -96,16 +98,17 @@ def main() -> None:
     if args.limit:
         rows = rows[: args.limit]
     expected = []
-    valid_expected = []
     predicted = []
     predictions = []
     latencies = []
-    for row in rows:
-        gold = RouteDecision.model_validate(row["route"])
-        expected.append(gold)
+    for offset in range(0, len(rows), args.batch_size):
+        batch = rows[offset : offset + args.batch_size]
+        gold_batch = [RouteDecision.model_validate(row["route"]) for row in batch]
+        expected.extend(gold_batch)
         encoded = tokenizer(
-            row["prompt"],
+            [row["prompt"] for row in batch],
             return_tensors="pt",
+            padding=True,
             truncation=True,
             max_length=512,
         )
@@ -119,36 +122,36 @@ def main() -> None:
                 pad_token_id=tokenizer.pad_token_id,
                 eos_token_id=tokenizer.eos_token_id,
             )
-        latency = (time.perf_counter() - started) * 1000.0
-        latencies.append(latency)
-        completion = tokenizer.decode(
-            generated[0][encoded["input_ids"].shape[1] :],
-            skip_special_tokens=True,
-        )
-        try:
-            route, canonical = parse_route(completion)
-            valid_expected.append(gold)
-            predicted.append(route)
-            error = None
-        except ValueError as exc:
-            canonical = None
-            error = str(exc)
-        predictions.append(
-            {
-                "id": row["id"],
-                "question": row["question"],
-                "gold": gold.model_dump(),
-                "prediction": canonical,
-                "raw_completion": completion,
-                "parse_error": error,
-                "latency_ms": round(latency, 3),
-            }
-        )
-    result = routing_metrics(
-        valid_expected,
-        predicted,
-        attempted_count=len(expected),
-    )
+        batch_latency = (time.perf_counter() - started) * 1000.0
+        amortized_latency = batch_latency / len(batch)
+        latencies.extend([amortized_latency] * len(batch))
+        prompt_width = encoded["input_ids"].shape[1]
+        for row, gold, generated_row in zip(batch, gold_batch, generated):
+            completion = tokenizer.decode(
+                generated_row[prompt_width:],
+                skip_special_tokens=True,
+            )
+            try:
+                route, canonical = parse_route(completion)
+                predicted.append(route)
+                error = None
+            except ValueError as exc:
+                canonical = None
+                error = str(exc)
+                predicted.append(None)
+            predictions.append(
+                {
+                    "id": row["id"],
+                    "question": row["question"],
+                    "gold": gold.model_dump(),
+                    "prediction": canonical,
+                    "raw_completion": completion,
+                    "parse_error": error,
+                    "latency_ms_amortized": round(amortized_latency, 3),
+                    "batch_latency_ms": round(batch_latency, 3),
+                }
+            )
+    result = routing_metrics(expected, predicted)
     result.update(
         {
             "method": "lora" if args.adapter else "base_zero_shot",
@@ -158,6 +161,7 @@ def main() -> None:
             "offline": args.offline,
             "split": str(args.data),
             "limited": args.limit is not None,
+            "batch_size": args.batch_size,
             "latency_ms_mean": round(sum(latencies) / len(latencies), 3),
             "predictions": predictions,
         }
@@ -172,6 +176,7 @@ def main() -> None:
         "json_valid_rate",
         "exact_route_accuracy",
         "question_type_accuracy",
+        "question_type_macro_f1",
         "source_micro_f1",
     )
     print(json.dumps({key: result[key] for key in summary_keys}, indent=2))

@@ -81,6 +81,27 @@ def source_from_path(path: Path, corpus_dir: Path) -> str:
 
 def load_corpus(corpus_dir: Path, limit: Optional[int]) -> Dict[str, List[IndexedChunk]]:
     grouped: Dict[str, List[IndexedChunk]] = {source: [] for source in SOURCE_TYPES}
+    packed_path = corpus_dir / "corpus.jsonl"
+    if packed_path.is_file():
+        for index, row in enumerate(read_jsonl(packed_path)):
+            if limit and index >= limit:
+                break
+            source = str(row["source"])
+            if source not in grouped:
+                raise ValueError("Unsupported source in packed corpus: {}".format(source))
+            document_id = str(row["document_id"])
+            grouped[source].append(
+                IndexedChunk(
+                    document_id=document_id,
+                    filename=str(row.get("filename") or f"{document_id}.txt"),
+                    chunk_id=document_id,
+                    content=str(row["content"]),
+                    content_type="text/plain",
+                )
+            )
+        if not any(grouped.values()):
+            raise ValueError("Packed corpus is empty: {}".format(packed_path))
+        return grouped
     paths = sorted(corpus_dir.rglob("*.txt"))
     if limit:
         paths = paths[:limit]
@@ -167,15 +188,19 @@ def main() -> None:
     for source, chunks in grouped.items():
         if not chunks:
             continue
-        bm25 = BM25Index()
-        bm25.build(chunks)
-        if args.dense_backend == "sentence-transformers":
-            dense = SentenceTransformerIndex(
-                args.embedding_model, args.embedding_batch_size
-            )
-        else:
-            dense = LiteDenseIndex()
-        dense.build(chunks)
+        bm25 = None
+        dense = None
+        if args.retrieval in {"bm25", "hybrid"}:
+            bm25 = BM25Index()
+            bm25.build(chunks)
+        if args.retrieval in {"dense", "hybrid"}:
+            if args.dense_backend == "sentence-transformers":
+                dense = SentenceTransformerIndex(
+                    args.embedding_model, args.embedding_batch_size
+                )
+            else:
+                dense = LiteDenseIndex()
+            dense.build(chunks)
         indexes[source] = (bm25, dense)
 
     questions = list(read_jsonl(args.questions))
@@ -200,8 +225,18 @@ def main() -> None:
             if source not in indexes:
                 continue
             bm25, dense = indexes[source]
-            sparse_results.extend(bm25.search(question["question"], args.candidate_k))
-            dense_results.extend(dense.search(question["question"], args.candidate_k))
+            if bm25 is not None:
+                source_results = bm25.search(question["question"], args.candidate_k)
+                sparse_results.extend(
+                    (chunk, 1.0 / (60 + rank))
+                    for rank, (chunk, _) in enumerate(source_results, 1)
+                )
+            if dense is not None:
+                source_results = dense.search(question["question"], args.candidate_k)
+                dense_results.extend(
+                    (chunk, 1.0 / (60 + rank))
+                    for rank, (chunk, _) in enumerate(source_results, 1)
+                )
         sparse_results.sort(key=lambda item: (-item[1], item[0].document_id))
         dense_results.sort(key=lambda item: (-item[1], item[0].document_id))
         if args.retrieval == "bm25":
@@ -240,9 +275,11 @@ def main() -> None:
             if args.dense_backend == "sentence-transformers"
             else None
         ),
+        "cross_source_score_calibration": "reciprocal_rank_k60",
         "warning": (
             "hashing-smoke is a deterministic plumbing check, not a semantic model."
-            if args.dense_backend == "hashing-smoke"
+            if args.retrieval in {"dense", "hybrid"}
+            and args.dense_backend == "hashing-smoke"
             else None
         ),
         "question_count": len(rows),

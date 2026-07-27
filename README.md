@@ -40,6 +40,23 @@ LoRA 输出示例：
 LoRA 不负责记住企业事实，也不直接生成最终答案。企业知识保留在检索库中，LoRA
 只学习相对稳定的查询理解和检索策略。
 
+```mermaid
+flowchart LR
+    Q["用户问题"] --> R["Qwen2.5 + QLoRA Router"]
+    R --> J["严格 JSON 路由"]
+    J --> S{"目标数据源"}
+    S --> A["Slack / Gmail"]
+    S --> B["GitHub / Jira / Linear"]
+    S --> C["Drive / Confluence / CRM / 会议"]
+    A --> BM["BM25 / Dense 候选召回"]
+    B --> BM
+    C --> BM
+    BM --> F["RRF 融合与 Top-K 文档"]
+    F --> E["Recall@K / MRR / nDCG / 延迟"]
+    OR["Oracle 来源标签"] -. 上界对照 .-> S
+    ALL["全来源固定检索"] -. 基线对照 .-> BM
+```
+
 ## 数据隔离
 
 官方 Redwood `questions.jsonl` 只能用于最终评测，不能拆分后训练。
@@ -98,19 +115,38 @@ data/enterprise_rag_bench/corpus/
 
 ## 3. 准备 LoRA 数据
 
-先使用 EnterpriseRAG-Bench 官方生成框架创建一个独立训练公司，然后执行：
+仓库提供不读取官方测试题的 Northstar Labs 独立训练集生成器。正式 V2 使用
+`production-shaped` 流量先验生成 2,000 条；`balanced` 可用于类别均衡消融：
+
+```powershell
+python scripts\generate_router_training_questions.py `
+  --output data\enterprise_router\northstar_questions.jsonl `
+  --profile production-shaped `
+  --seed 20260727
+```
+
+然后划分训练/验证集并将官方题只登记为 benchmark：
 
 ```powershell
 python scripts\prepare_enterprise_router.py `
-  --train-questions D:\datasets\training-company\questions.jsonl `
+  --train-questions data\enterprise_router\northstar_questions.jsonl `
   --benchmark-questions data\enterprise_rag_bench\benchmark\questions.jsonl `
   --output data\enterprise_router `
   --validation-ratio 0.15 `
   --seed 42
 ```
 
-仅验证代码链路时，可以把样例训练集作为 `--train-questions`，但仍必须使用不同的
-benchmark 文件。
+额外的模糊污染检查：
+
+```powershell
+python scripts\check_router_leakage.py `
+  --train data\enterprise_router\northstar_questions.jsonl `
+  --benchmark data\enterprise_rag_bench\benchmark\questions.jsonl `
+  --max-token-jaccard 0.8
+```
+
+V2 固定数据产物为训练 1,700 条、验证 300 条、官方测试 500 条；精确重合为 0，
+最大两两词集合 Jaccard 为 0.233333。该数值只用于污染审计，不是模型效果。
 
 ## 4. 训练 LoRA
 
@@ -175,11 +211,22 @@ python scripts\evaluate_enterprise_router.py `
 
 ## 6. 端到端检索实验
 
+官方仓库提供 JSON 文档时，可构建一个包含全部金标准文档、每来源 5,000 个确定性负例
+的约 4.5 万文档子集。导出器会扫描完整语料并在金标准覆盖率不足 100% 时失败：
+
+```powershell
+python scripts\export_enterprise_rag_corpus.py `
+  --sources-dir D:\datasets\EnterpriseRAG-Bench\generated_data\sources `
+  --questions data\enterprise_rag_bench\benchmark\questions.jsonl `
+  --output data\enterprise_rag_bench\corpus_5k_v2 `
+  --distractors-per-source 5000
+```
+
 全数据源固定检索：
 
 ```powershell
 python scripts\run_enterprise_retrieval_benchmark.py `
-  --corpus-dir data\enterprise_rag_bench\corpus `
+  --corpus-dir data\enterprise_rag_bench\corpus_5k_v2 `
   --questions data\enterprise_rag_bench\benchmark\questions.jsonl `
   --routing all `
   --retrieval hybrid `
@@ -191,7 +238,7 @@ LoRA 路由：
 
 ```powershell
 python scripts\run_enterprise_retrieval_benchmark.py `
-  --corpus-dir data\enterprise_rag_bench\corpus `
+  --corpus-dir data\enterprise_rag_bench\corpus_5k_v2 `
   --questions data\enterprise_rag_bench\benchmark\questions.jsonl `
   --routing lora `
   --router-predictions artifacts\lora-router.json `
@@ -204,7 +251,7 @@ Oracle 上界：
 
 ```powershell
 python scripts\run_enterprise_retrieval_benchmark.py `
-  --corpus-dir data\enterprise_rag_bench\corpus `
+  --corpus-dir data\enterprise_rag_bench\corpus_5k_v2 `
   --questions data\enterprise_rag_bench\benchmark\questions.jsonl `
   --routing oracle `
   --retrieval hybrid `
@@ -225,8 +272,30 @@ python scripts\run_enterprise_retrieval_benchmark.py `
 | E | LoRA | Hybrid | 项目核心方法 |
 | F | Oracle 标签 | Hybrid | 路由方法理论上界 |
 
-最终报告至少包含 Recall@10、MRR、nDCG@10、平均检索延迟和失败案例。目前仓库
-不提供虚构的提升数字，GPU 训练与全量基准结果均标记为待测。
+## 已复现的正式结果
+
+环境：RTX 4060 Laptop 8 GB、PyTorch 2.11.0+cu128、Qwen2.5-1.5B-Instruct。
+V2 QLoRA 使用 4,358,144 个可训练参数（0.2815%），训练 2 轮耗时 966.78 秒。
+
+| 方法 | JSON 合法率 | 类型 Macro-F1 | 来源 Micro-F1 |
+|---|---:|---:|---:|
+| Base zero-shot | 0.0000 | 0.0000 | 0.0000 |
+| V2 LoRA | 0.9940 | 0.1089 | 0.3237 |
+
+45,278 文档 BM25 子集覆盖 722/722 个金标准文档：
+
+| 路由 | Recall@10 | MRR | nDCG@10 | 平均延迟 |
+|---|---:|---:|---:|---:|
+| 全来源 | 0.5827 | 0.2096 | 0.2843 | 248.27 ms |
+| V2 LoRA 硬路由 | 0.3844 | 0.1996 | 0.2321 | 145.62 ms |
+| Oracle | 0.7848 | 0.6881 | 0.6962 | 38.15 ms |
+
+结论不是“LoRA 提升召回”：硬路由将平均检索延迟降低 41.3%，但 Recall@10 绝对下降
+0.1983，不能直接上线。Oracle 结果证明来源路由有潜力，而 V1→V2 的有限改善说明
+跨公司模板数据仍存在明显分布偏移。下一步应使用排除 722 个金文档后的同域语料生成
+训练问题，并采用软路由或低置信度全源回退。原始逐条预测与汇总依据见
+`docs/enterprise-router-results.md`；可审计的逐条预测和逐题检索结果位于
+`results/enterprise_router_v2/`。
 
 ## 测试
 

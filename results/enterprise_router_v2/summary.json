@@ -1,0 +1,93 @@
+{
+  "claim_policy": "Only values loaded from the listed artifacts are reported.",
+  "environment": {
+    "python": "3.11.3",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "torch": "2.11.0+cu128",
+    "cuda_available": true,
+    "cuda_runtime": "12.8",
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "packages": {
+      "transformers": "4.57.6",
+      "peft": "0.19.1",
+      "bitsandbytes": "0.50.0",
+      "datasets": "4.8.5"
+    }
+  },
+  "data": {
+    "train_samples": 1700,
+    "validation_samples": 300,
+    "benchmark_samples": 500,
+    "leakage_check": "passed",
+    "retrieval_documents": 45278,
+    "gold_document_coverage": 1.0
+  },
+  "lora": {
+    "base_model": "Qwen/Qwen2.5-1.5B-Instruct",
+    "rank": 16,
+    "alpha": 32,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj"
+    ],
+    "trainable_parameters": 4358144,
+    "all_parameters": 1548072448,
+    "trainable_parameter_fraction_percent": 0.281521,
+    "train_runtime_seconds": 966.7834,
+    "training_loss": 0.032699926295013074,
+    "validation_loss": 0.008754776790738106
+  },
+  "router": {
+    "base": {
+      "json_valid_rate": 0.0,
+      "exact_route_accuracy": 0.0,
+      "question_type_accuracy": 0.0,
+      "question_type_macro_f1": 0.0,
+      "source_micro_f1": 0.0,
+      "source_macro_f1": 0.0
+    },
+    "lora": {
+      "json_valid_rate": 0.994,
+      "exact_route_accuracy": 0.044,
+      "question_type_accuracy": 0.132,
+      "question_type_macro_f1": 0.108894,
+      "source_micro_f1": 0.323706,
+      "source_macro_f1": 0.313996
+    },
+    "lora_minus_base": {
+      "json_valid_rate": 0.994,
+      "exact_route_accuracy": 0.044,
+      "question_type_accuracy": 0.132,
+      "question_type_macro_f1": 0.108894,
+      "source_micro_f1": 0.323706,
+      "source_macro_f1": 0.313996
+    }
+  },
+  "retrieval": {
+    "all": {
+      "recall@10": 0.582683,
+      "mrr": 0.209649,
+      "ndcg@10": 0.284259,
+      "latency_ms_mean": 248.268
+    },
+    "lora": {
+      "recall@10": 0.384403,
+      "mrr": 0.199571,
+      "ndcg@10": 0.232093,
+      "latency_ms_mean": 145.615
+    },
+    "oracle": {
+      "recall@10": 0.784823,
+      "mrr": 0.688098,
+      "ndcg@10": 0.696164,
+      "latency_ms_mean": 38.152
+    },
+    "lora_minus_all": {
+      "recall@10": -0.19828,
+      "mrr": -0.010078,
+      "ndcg@10": -0.052166
+    }
+  }
+}
