@@ -30,6 +30,14 @@ class Settings:
     llm_model: str = ""
     embedding_provider: str = "lite"
     reranker_enabled: bool = False
+    intent_enabled: bool = True
+    intent_backend: str = "lite"
+    intent_base_model: str = ""
+    intent_adapter_path: str = ""
+    intent_labels_path: str = ""
+    intent_device: str = "auto"
+    intent_max_length: int = 256
+    intent_confidence_threshold: float = 0.55
     legal_enabled: bool = False
     legal_base_model: str = ""
     legal_adapter_path: str = ""
@@ -47,6 +55,12 @@ class Settings:
         if log_format not in {"json", "text"}:
             raise ValueError("DOCMIND_LOG_FORMAT must be 'json' or 'text'")
         object.__setattr__(self, "log_format", log_format)
+        intent_backend = self.intent_backend.lower()
+        if intent_backend not in {"lite", "lora"}:
+            raise ValueError("DOCMIND_INTENT_BACKEND must be 'lite' or 'lora'")
+        object.__setattr__(self, "intent_backend", intent_backend)
+        if not 0.0 <= self.intent_confidence_threshold <= 1.0:
+            raise ValueError("DOCMIND_INTENT_CONFIDENCE_THRESHOLD must be between 0 and 1")
         if self.data_dir is None:
             object.__setattr__(self, "data_dir", self.project_root / "data")
 
@@ -68,6 +82,16 @@ class Settings:
             llm_model=os.getenv("DOCMIND_LLM_MODEL", ""),
             embedding_provider=os.getenv("DOCMIND_EMBEDDING_PROVIDER", "lite"),
             reranker_enabled=_as_bool(os.getenv("DOCMIND_RERANKER_ENABLED")),
+            intent_enabled=_as_bool(os.getenv("DOCMIND_INTENT_ENABLED"), True),
+            intent_backend=os.getenv("DOCMIND_INTENT_BACKEND", "lite"),
+            intent_base_model=os.getenv("DOCMIND_INTENT_BASE_MODEL", ""),
+            intent_adapter_path=os.getenv("DOCMIND_INTENT_ADAPTER_PATH", ""),
+            intent_labels_path=os.getenv("DOCMIND_INTENT_LABELS_PATH", ""),
+            intent_device=os.getenv("DOCMIND_INTENT_DEVICE", "auto"),
+            intent_max_length=int(os.getenv("DOCMIND_INTENT_MAX_LENGTH", "256")),
+            intent_confidence_threshold=float(
+                os.getenv("DOCMIND_INTENT_CONFIDENCE_THRESHOLD", "0.55")
+            ),
             legal_enabled=_as_bool(os.getenv("DOCMIND_LEGAL_ENABLED")),
             legal_base_model=os.getenv("DOCMIND_LEGAL_BASE_MODEL", ""),
             legal_adapter_path=os.getenv("DOCMIND_LEGAL_ADAPTER_PATH", ""),

@@ -24,6 +24,12 @@ class RetrievalPlan(BaseModel):
     dense_weight: float = Field(ge=0.0)
     use_reranker: bool
     reason: str
+    intent: Optional[str] = None
+    intent_domain: Optional[str] = None
+    intent_confidence: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    knowledge_base: Optional[str] = None
+    routing_backend: Optional[Literal["lite", "lora"]] = None
+    routing_abstained: bool = False
 
 
 class SearchRequest(BaseModel):

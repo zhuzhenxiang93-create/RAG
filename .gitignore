@@ -9,6 +9,7 @@ __pycache__/
 data/uploads/
 data/indexes/
 data/logs/
+data/intent/
 data/*.db
 models/
 artifacts/

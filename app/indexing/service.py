@@ -5,7 +5,7 @@ import json
 import threading
 import time
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from app.reranking.lite import LiteReranker
 from app.retrieval.bm25 import BM25Index
@@ -23,16 +23,24 @@ from app.schemas.search import (
 )
 from app.storage.documents import DocumentRepository
 
+if TYPE_CHECKING:
+    from app.plugins.intent.classifier import IntentClassifier
+
 
 class IndexService:
     """Build and query reproducible Lite indexes over persisted child chunks."""
 
-    def __init__(self, data_dir: Path) -> None:
+    def __init__(
+        self,
+        data_dir: Path,
+        intent_classifier: Optional["IntentClassifier"] = None,
+    ) -> None:
         self.data_dir = data_dir
         self.repository = DocumentRepository(data_dir)
         self.bm25 = BM25Index()
         self.dense = LiteDenseIndex()
         self.router = QueryRouter()
+        self.intent_classifier = intent_classifier
         self.reranker = LiteReranker()
         self.fingerprint = ""
         self.document_count = 0
@@ -88,6 +96,15 @@ class IndexService:
     def search(self, request: SearchRequest) -> SearchResponse:
         timings: Dict[str, float] = {}
         plan = self.router.route(request.query)
+        if self.intent_classifier is not None:
+            started = time.perf_counter()
+            try:
+                intent_result = self.intent_classifier.predict(request.query, top_k=3)
+                plan = self.router.apply_intent(plan, intent_result)
+            except RuntimeError:
+                # Intent routing is an optional optimization; retrieval remains available.
+                pass
+            timings["intent_router"] = self._elapsed(started)
         if self._current_fingerprint() != self.fingerprint:
             build_result = self.build()
             timings["build"] = build_result.build_ms

@@ -205,15 +205,24 @@ function renderConfidence(data) {
 
 function renderRoute(retrieval) {
   const plan = retrieval.plan;
+  const intent = plan.intent
+    ? `<div class="route-weights">
+        <div><span>业务领域</span><b>${escapeHtml(plan.intent_domain || "—")}</b></div>
+        <div><span>用户意图</span><b>${escapeHtml(plan.intent)}</b></div>
+        <div><span>路由置信度</span><b>${((plan.intent_confidence || 0) * 100).toFixed(0)}%</b></div>
+        <div><span>知识库建议</span><b>${escapeHtml(plan.knowledge_base || "全部文档")}</b></div>
+      </div>`
+    : "";
   document.querySelector("#route-content").innerHTML = `
     <span class="route-type">${escapeHtml(plan.query_type.toUpperCase())}</span>
+    ${intent}
     <div class="route-weights">
       <div><span>BM25 权重</span><b>${plan.bm25_weight.toFixed(2)}</b></div>
       <div><span>Dense 权重</span><b>${plan.dense_weight.toFixed(2)}</b></div>
       <div><span>启用重排</span><b>${plan.use_reranker ? "是" : "否"}</b></div>
       <div><span>候选数量</span><b>${retrieval.total_candidates}</b></div>
     </div>
-    <p class="route-reason">${escapeHtml(plan.reason)} · 总耗时 ${Object.values(retrieval.timings_ms).reduce((a, b) => a + b, 0).toFixed(2)} ms</p>`;
+    <p class="route-reason">${escapeHtml(plan.reason)} · ${plan.routing_abstained ? "低置信度回退全库 · " : ""}总耗时 ${Object.values(retrieval.timings_ms).reduce((a, b) => a + b, 0).toFixed(2)} ms</p>`;
 }
 
 function renderAnswer(data) {

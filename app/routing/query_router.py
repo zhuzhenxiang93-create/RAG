@@ -4,6 +4,7 @@ import re
 from typing import List
 
 from app.retrieval.tokenizer import tokenize
+from app.schemas.intent import IntentClassificationResponse
 from app.schemas.search import RetrievalPlan
 
 
@@ -82,6 +83,45 @@ class QueryRouter:
             use_reranker=True,
             reason="Default semantic question route.",
         )
+
+    @staticmethod
+    def apply_intent(
+        plan: RetrievalPlan, intent_result: IntentClassificationResponse
+    ) -> RetrievalPlan:
+        """Enrich and, when safe, tune retrieval using the predicted intent."""
+        top = intent_result.predictions[0]
+        route = intent_result.route
+        updates = {
+            "intent": top.intent,
+            "intent_domain": top.domain,
+            "intent_confidence": top.probability,
+            "knowledge_base": route.knowledge_base,
+            "routing_backend": intent_result.backend,
+            "routing_abstained": route.abstain,
+        }
+        if plan.query_type == "out_of_scope" or route.abstain:
+            return plan.model_copy(update=updates)
+        if route.retrieval_profile == "exact":
+            updates.update(
+                bm25_weight=max(plan.bm25_weight, 1.0),
+                dense_weight=min(plan.dense_weight, 0.8),
+                use_reranker=True,
+                reason=plan.reason + " Intent routing favors exact retrieval.",
+            )
+        elif route.retrieval_profile == "semantic":
+            updates.update(
+                bm25_weight=min(plan.bm25_weight, 0.55),
+                dense_weight=max(plan.dense_weight, 1.1),
+                reason=plan.reason + " Intent routing favors semantic retrieval.",
+            )
+        elif route.retrieval_profile == "broad":
+            updates.update(
+                bm25_weight=max(plan.bm25_weight, 0.75),
+                dense_weight=max(plan.dense_weight, 1.0),
+                use_reranker=True,
+                reason=plan.reason + " Uncertain intent uses broad retrieval.",
+            )
+        return plan.model_copy(update=updates)
 
     @staticmethod
     def _keywords(query: str) -> List[str]:
