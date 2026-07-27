@@ -15,7 +15,9 @@ flowchart TB
     end
 
     subgraph RETRIEVAL["Retrieval plane"]
-        API --> ROUTER["Explainable Query Router"]
+        API --> INTENT["Intent Router<br/>Lite fallback / MASSIVE LoRA"]
+        INTENT --> KB["Domain + Knowledge-base Recommendation"]
+        KB --> ROUTER["Explainable Query Router"]
         STORE --> BM25["BM25 Index"]
         STORE --> DENSE["Lite Hashing Dense Index"]
         ROUTER --> BM25
@@ -34,7 +36,7 @@ flowchart TB
     end
 
     subgraph EXT["Optional domain plugins"]
-        LEGAL["Legal LoRA Classifier<br/>Lazy Transformers / PEFT Loading"]
+        LEGAL["Historical Legal Classifier<br/>Optional domain example"]
         FULL["Full Embedding / Cross-Encoder / LLM<br/>Interfaces reserved, results pending"]
     end
 
@@ -69,10 +71,12 @@ its section so that headings and entities are not lost during retrieval.
 
 ### Route before fusion
 
-The rule-first Query Router returns an inspectable plan. Exact identifiers favor BM25;
-semantic or comparison questions increase the dense channel; table-like questions use
-both exact and contextual signals. Standard weighted RRF only rewards channels where a
-candidate actually appears.
+The intent layer predicts a business domain, intent and route confidence. Its result
+selects a knowledge-base recommendation and retrieval profile; low-confidence routes
+fall back to all documents. The rule-first Query Router then handles exact identifiers,
+semantic questions, comparisons and tables. Standard weighted RRF only rewards channels
+where a candidate actually appears. Lite rules keep the CPU demo available, while a
+MASSIVE-trained LoRA adapter can replace them without changing the API.
 
 ### Treat uncertainty as a product decision
 
@@ -92,4 +96,6 @@ runtime state in `/var/lib/docmind`, separate from `/app/data/eval`.
 - Lite reranking is a transparent lexical baseline, not a trained Cross-Encoder.
 - Conflict analysis is rule-based and is not a trained NLI model.
 - The 7-document, 14-question benchmark is a regression suite, not production evidence.
+- Lite intent routing is a keyword baseline, not a trained model or reported metric.
+- MASSIVE full training and end-to-end routing improvement are pending GPU experiments.
 - Legal model assets were structurally validated; full inference quality is still pending.

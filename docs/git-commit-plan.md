@@ -9,11 +9,14 @@ evaluation/load artifacts. No staged file exceeded 5 MB.
 
 Recommended future commits:
 
-1. `feat(retrieval): integrate production embedding and cross-encoder providers`
-2. `test(eval): add independent calibration and held-out evidence labels`
-3. `feat(ocr): add local or remote scanned-pdf provider`
-4. `perf(index): add persistent vector index and incremental updates`
-5. `docs: publish verified full-mode benchmark results`
+1. `feat(intent): add MASSIVE LoRA classification and adaptive RAG routing`
+2. `test(intent): add classification metrics and route integration coverage`
+3. `docs(intent): document reproducible training and honest evaluation boundaries`
+4. `feat(retrieval): integrate production embedding and cross-encoder providers`
+5. `test(eval): add independent calibration and held-out evidence labels`
+
+For the current intent-routing change, the first three commits are a recommended split.
+Do not commit generated MASSIVE data, checkpoints, `.env` files or evaluation artifacts.
 
 The completed staged work is represented by one honest initial commit rather than a
 fabricated multi-stage history. The repository-local author uses the authenticated

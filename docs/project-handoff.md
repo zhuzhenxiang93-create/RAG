@@ -10,6 +10,8 @@ Repository: `https://github.com/zhuzhenxiang93-create/RAG`
 - Diagnostics: `GET /api/diagnostics`
 - Demo corpus: `POST /api/demo/bootstrap` in Lite mode
 - Evaluation: `POST /api/evaluation/run`
+- Intent status: `GET /api/plugins/intent/status`
+- Intent classification: `POST /api/plugins/intent/classify`
 
 ## Reproduction sequence
 
@@ -32,6 +34,8 @@ For evaluation and load artifacts:
 Verified:
 
 - Lite document ingestion, retrieval, selective QA, demo bootstrap and evaluation;
+- Lite intent classification, low-confidence fallback and adaptive-search integration;
+- MASSIVE preparation, LoRA training and dependency-free metric scripts pass syntax checks;
 - optional legal asset validation without importing heavy dependencies;
 - Windows local virtual environment and browser workflow;
 - deterministic tests, syntax checks and credential pattern scan.
@@ -39,6 +43,8 @@ Verified:
 
 Pending:
 
+- MASSIVE full download, GPU LoRA training and held-out Accuracy/Macro-F1/ECE;
+- measured RAG retrieval improvement from predicted intent routing;
 - real legal model inference and held-out classification score;
 - production-grade embedding and Cross-Encoder evaluation;
 - OCR provider integration;
