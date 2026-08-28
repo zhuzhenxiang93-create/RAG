@@ -1,0 +1,112 @@
+{
+  "dataset_version": "2.0.0",
+  "filtering": {
+    "exact_duplicate_rows": 3407,
+    "low_information_rows": 607,
+    "normalized_duplicate_rows": 3408,
+    "raw_rows": 154592,
+    "short_rows": 55
+  },
+  "frequency_bands": {
+    "extreme_tail": {
+      "max": 72,
+      "min": 1
+    },
+    "head": {
+      "max": 9618,
+      "min": 1892
+    },
+    "tail": {
+      "max": 1891,
+      "min": 73
+    }
+  },
+  "num_labels": 202,
+  "output_sha256": {
+    "label_mapping.json": "0595297115fd9df0e78d42a64dbb3d6286da9b807d3005a4278bfc3e51ca301f",
+    "test.jsonl": "375174886407455ad66c754f278652d8891b0761a80f92e75a99baf182a7117d",
+    "train.jsonl": "8d57c9719083eb544d08a7c4aed60b6942a94c0c094e43a43b9dc95524db23b0",
+    "validation.jsonl": "9d5e763a50e37b58749ab996f4b83ff7ca7a62183a751bb8a90541568123dfa0"
+  },
+  "quality": {
+    "dedup_group_cross_split_overlap": 0,
+    "exact_cross_split_overlap": 0,
+    "normalized_cross_split_overlap": 0,
+    "review_status": "unreviewed"
+  },
+  "seed": 42,
+  "sizes": {
+    "test": 15097,
+    "train": 120393,
+    "validation": 15032
+  },
+  "source_dataset": "CAIL2018_legacy_local",
+  "source_sha256": "5d287aed962c8387f751c0fdd0599ea105469dfb0a0f80a89ce239373853e404",
+  "source_status": "legacy_local_file_unverified",
+  "split_strategy": "normalized_dedup_then_iterative_multilabel_group_split",
+  "statistics": {
+    "test": {
+      "fact_characters": {
+        "max": 42575,
+        "min": 21,
+        "p50": 353,
+        "p90": 820,
+        "p95": 1121,
+        "p99": 2487
+      },
+      "label_frequency_max": 962,
+      "label_frequency_min": 2,
+      "labels_missing": [],
+      "labels_present": 202,
+      "multi_label_rows": 3271,
+      "review_status": {
+        "unreviewed": 15097
+      },
+      "rows": 15097,
+      "single_label_rows": 11826,
+      "target_leakage_removed_rows": 7220
+    },
+    "train": {
+      "fact_characters": {
+        "max": 56216,
+        "min": 20,
+        "p50": 352,
+        "p90": 819,
+        "p95": 1123,
+        "p99": 2625
+      },
+      "label_frequency_max": 7694,
+      "label_frequency_min": 13,
+      "labels_missing": [],
+      "labels_present": 202,
+      "multi_label_rows": 26142,
+      "review_status": {
+        "unreviewed": 120393
+      },
+      "rows": 120393,
+      "single_label_rows": 94251,
+      "target_leakage_removed_rows": 58189
+    },
+    "validation": {
+      "fact_characters": {
+        "max": 34640,
+        "min": 20,
+        "p50": 354,
+        "p90": 806,
+        "p95": 1120,
+        "p99": 2597
+      },
+      "label_frequency_max": 962,
+      "label_frequency_min": 1,
+      "labels_missing": [],
+      "labels_present": 202,
+      "multi_label_rows": 3242,
+      "review_status": {
+        "unreviewed": 15032
+      },
+      "rows": 15032,
+      "single_label_rows": 11790,
+      "target_leakage_removed_rows": 7247
+    }
+  }
+}

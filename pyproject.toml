@@ -1,17 +1,52 @@
 [build-system]
-requires = ["setuptools>=69"]
+requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "docmind-rag"
+name = "legalmind-rag"
 version = "0.1.0"
-description = "LoRA query routing for multi-source enterprise RAG"
-requires-python = ">=3.9,<3.13"
+description = "QLoRA multi-label charge classification and traceable legal case retrieval"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.26,<3",
+  "pydantic>=2.7,<3",
+  "PyYAML>=6.0",
+  "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+train = [
+  "accelerate>=1.2",
+  "bitsandbytes>=0.45; platform_system != 'Windows'",
+  "datasets>=3.2",
+  "iterative-stratification>=0.1.9",
+  "peft>=0.14",
+  "scikit-learn>=1.4",
+  "torch>=2.4",
+  "transformers>=4.51",
+]
+retrieval = [
+  "faiss-cpu>=1.9",
+  "httpx>=0.27",
+  "rank-bm25>=0.2.2",
+  "sentence-transformers>=5.0",
+]
+generation = ["openai>=1.60"]
+dev = ["pytest>=8.0", "ruff>=0.8"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.pytest.ini_options]
+pythonpath = ["src"]
 testpaths = ["tests"]
-pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100
-target-version = "py39"
+target-version = "py310"
+extend-exclude = [
+  ".codex_backups",
+  "artifacts",
+  "data",
+]

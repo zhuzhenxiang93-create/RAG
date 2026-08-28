@@ -1,0 +1,86 @@
+{
+  "tokenizer": "Qwen/Qwen3-4B",
+  "splits": {
+    "train": {
+      "rows": 120483,
+      "min": 12,
+      "p50": 251,
+      "p90": 594,
+      "p95": 821,
+      "p99": 1935,
+      "max": 43647,
+      "thresholds": {
+        "1024": {
+          "rows_exceeding": 3831,
+          "fraction_exceeding": 0.03179701700654864
+        },
+        "2048": {
+          "rows_exceeding": 1093,
+          "fraction_exceeding": 0.00907181926080858
+        },
+        "3072": {
+          "rows_exceeding": 547,
+          "fraction_exceeding": 0.004540059593469618
+        },
+        "4096": {
+          "rows_exceeding": 329,
+          "fraction_exceeding": 0.002730675696986297
+        }
+      }
+    },
+    "validation": {
+      "rows": 15081,
+      "min": 21,
+      "p50": 250,
+      "p90": 589,
+      "p95": 814,
+      "p99": 1873,
+      "max": 25137,
+      "thresholds": {
+        "1024": {
+          "rows_exceeding": 488,
+          "fraction_exceeding": 0.03235859691001923
+        },
+        "2048": {
+          "rows_exceeding": 135,
+          "fraction_exceeding": 0.008951661030435647
+        },
+        "3072": {
+          "rows_exceeding": 84,
+          "fraction_exceeding": 0.005569922418937737
+        },
+        "4096": {
+          "rows_exceeding": 45,
+          "fraction_exceeding": 0.002983887010145216
+        }
+      }
+    },
+    "test": {
+      "rows": 15033,
+      "min": 16,
+      "p50": 249,
+      "p90": 604,
+      "p95": 837,
+      "p99": 1894,
+      "max": 28989,
+      "thresholds": {
+        "1024": {
+          "rows_exceeding": 490,
+          "fraction_exceeding": 0.032594957759595554
+        },
+        "2048": {
+          "rows_exceeding": 130,
+          "fraction_exceeding": 0.008647641854586576
+        },
+        "3072": {
+          "rows_exceeding": 69,
+          "fraction_exceeding": 0.004589902215126721
+        },
+        "4096": {
+          "rows_exceeding": 47,
+          "fraction_exceeding": 0.003126455132042839
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+train: data/processed_v2/train.jsonl
+chunks: data/knowledge/cases/case_chunks.jsonl
+output_dir: data/reranker
+queries: 5000
+negatives_per_query: 3
+seed: 42

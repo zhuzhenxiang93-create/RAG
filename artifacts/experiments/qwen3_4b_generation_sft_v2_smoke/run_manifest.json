@@ -1,0 +1,37 @@
+{
+  "experiment_type": "generation_sft_smoke",
+  "model": "Qwen/Qwen3-4B",
+  "train_rows": 100,
+  "validation_rows": 20,
+  "max_length": 2048,
+  "assistant_only_loss": true,
+  "quantization": "4bit_nf4_double_quant_bf16",
+  "lora": {
+    "r": 16,
+    "alpha": 32,
+    "dropout": 0.05,
+    "target_modules": "all-linear"
+  },
+  "elapsed_seconds": 58.33777952194214,
+  "peak_gpu_memory_gib": 9.461463928222656,
+  "train_metrics": {
+    "train_runtime": 46.6,
+    "train_samples_per_second": 2.146,
+    "train_steps_per_second": 0.086,
+    "total_flos": 1491373324124160.0,
+    "train_loss": 1.0962742567062378,
+    "epoch": 1.0
+  },
+  "validation_metrics": {
+    "eval_loss": 0.7407647967338562,
+    "eval_runtime": 1.7727,
+    "eval_samples_per_second": 11.282,
+    "eval_steps_per_second": 5.641,
+    "epoch": 1.0
+  },
+  "data_sha256": {
+    "train": "8ece77ad0e5bd6c83fabdc4f560b100c6806d82d34a6c78f34e8bb79c13d306c",
+    "validation": "b1ffe8bc557fcd5e5adeff9b9e2e1b97efd218efebfca65acc13ff437ce398a8"
+  },
+  "status": "completed"
+}

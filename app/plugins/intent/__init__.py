@@ -1,2 +1,0 @@
-"""General intent classification plugin."""
-

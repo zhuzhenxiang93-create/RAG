@@ -1,0 +1,27 @@
+{
+  "sft": {
+    "rows": {
+      "train": 4500,
+      "validation": 550
+    },
+    "construction_type_distribution": {
+      "deterministic_simplified_schema": 4500,
+      "deterministic_insufficient_information": 550
+    },
+    "source_case_cross_split_overlap": 0,
+    "errors": {},
+    "valid": true,
+    "test_rows_used": 0,
+    "review_status": "unreviewed"
+  },
+  "retrieval": {
+    "queries": 200,
+    "candidate_pool": 1139,
+    "silver_qrels": 1152,
+    "reviewed_qrels": 0,
+    "query_candidate_id_overlap": 0,
+    "errors": {},
+    "valid": true,
+    "judgment_status": "silver_proxy_unreviewed"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "status": "completed",
+  "scope": "smoke",
+  "model": "Qwen/Qwen3-4B",
+  "adapter": null,
+  "rows": 20,
+  "max_input_tokens": 1664,
+  "max_new_tokens": 384,
+  "elapsed_seconds": 154.20716244447976,
+  "peak_gpu_memory_gib": 2.6737518310546875,
+  "metrics": {
+    "rows": 20,
+    "json_parse_rate": 0.0,
+    "schema_pass_rate": 0.0,
+    "accusation_micro_f1": 0.0,
+    "citation_grounded_rate": 0.0,
+    "unsupported_citations": 0
+  },
+  "limitations": [
+    "Smoke subset only; not a full generation evaluation.",
+    "No retrieved statute or case evidence is supplied in this smoke run.",
+    "Validation targets are deterministic and unreviewed."
+  ]
+}

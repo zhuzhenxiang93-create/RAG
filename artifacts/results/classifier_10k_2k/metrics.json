@@ -1,0 +1,10 @@
+{
+  "micro_f1": 0.8295845997973658,
+  "macro_f1": 0.6052039537057795,
+  "macro_f1_supported": 0.6052039537057795,
+  "micro_precision": 0.8434281005356407,
+  "micro_recall": 0.8161881977671451,
+  "hamming_loss": 0.002081683168316832,
+  "labels_supported": 202,
+  "labels_total": 202
+}

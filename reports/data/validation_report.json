@@ -1,0 +1,19 @@
+{
+  "valid": true,
+  "sizes": {
+    "train": 120393,
+    "validation": 15032,
+    "test": 15097
+  },
+  "num_labels": 202,
+  "invalid_label_rows": 0,
+  "manually_reviewed_rows": 0,
+  "overlaps": {
+    "train_validation_facts": 0,
+    "train_validation_groups": 0,
+    "train_test_facts": 0,
+    "train_test_groups": 0,
+    "validation_test_facts": 0,
+    "validation_test_groups": 0
+  }
+}

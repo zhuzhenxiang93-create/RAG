@@ -1,2 +1,0 @@
-{"question_id":"smoke_q1","question_type":"basic","source_types":["github"],"question":"Which environment variable enables request tracing in the streaming gateway?","expected_doc_ids":["dsid_aaaaaaaa"]}
-{"question_id":"smoke_q2","question_type":"project_related","source_types":["slack","gmail"],"question":"Why did Northstar move, what is the new date, and will customers be notified?","expected_doc_ids":["dsid_bbbbbbbb","dsid_cccccccc"]}

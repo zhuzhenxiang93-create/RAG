@@ -1,0 +1,432 @@
+[
+  {
+    "left_id": "CAIL-24eaed1bc8990425",
+    "right_id": "CAIL-c253a8b846f4f6ea",
+    "hamming_distance": 1
+  },
+  {
+    "left_id": "CAIL-19cfdfe7b5bfeeff",
+    "right_id": "CAIL-63cc611ee06708d5",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-8e003eca7e738fa2",
+    "right_id": "CAIL-e919a40208e62be0",
+    "hamming_distance": 1
+  },
+  {
+    "left_id": "CAIL-278f4153c3c23f2e",
+    "right_id": "CAIL-30ed86a49f08a82a",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-4a012f1cbbc5f47d",
+    "right_id": "CAIL-b97ab4f15b9f2633",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-10b7fb02109cf717",
+    "right_id": "CAIL-b31a50f00287f29d",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-67077f041bb4540d",
+    "right_id": "CAIL-67bfd8185a68d65c",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-be1d15155595d8b7",
+    "right_id": "CAIL-f2da8de6655218a2",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-3d36db292f3c0061",
+    "right_id": "CAIL-bcc91effecd93743",
+    "hamming_distance": 1
+  },
+  {
+    "left_id": "CAIL-0b28b7f5978ce413",
+    "right_id": "CAIL-b2b1a89c8aaf9027",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-12d4aa0ba4d167eb",
+    "right_id": "CAIL-41d46b1a4a860050",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-aa96e44aa19384fe",
+    "right_id": "CAIL-b81668536acbe4cc",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-40471deaf8ca1290",
+    "right_id": "CAIL-735cb07b22f16ab3",
+    "hamming_distance": 1
+  },
+  {
+    "left_id": "CAIL-5d9a427686c0de48",
+    "right_id": "CAIL-9e29a045d5dd3508",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-bf33315bf194f689",
+    "right_id": "CAIL-d6326cc37a120c96",
+    "hamming_distance": 0
+  },
+  {
+    "left_id": "CAIL-12d8f9b41c3a0256",
+    "right_id": "CAIL-cf3ad87238bae031",
+    "hamming_distance": 1
+  },
+  {
+    "left_id": "CAIL-c27437074b025f3a",
+    "right_id": "CAIL-da93740fd369aeae",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-cd2ad6a54f1e32af",
+    "right_id": "CAIL-f81ac6e4e96405e6",
+    "hamming_distance": 0
+  },
+  {
+    "left_id": "CAIL-823e419824b8178b",
+    "right_id": "CAIL-a9ea8a191fb5f72a",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-8dbf196b37c5d47a",
+    "right_id": "CAIL-c0ca5a5bc441b36f",
+    "hamming_distance": 1
+  },
+  {
+    "left_id": "CAIL-48ca43041ae12b06",
+    "right_id": "CAIL-a99dd6a36d2406cc",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-4c6f353c18ca4e3f",
+    "right_id": "CAIL-6422bf9333b58bf3",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-9b1dd07c25fc3093",
+    "right_id": "CAIL-bf478d3836d07133",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-b288a1b3e182db87",
+    "right_id": "CAIL-b4cf6b0f1a4aafc6",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-6d3cca6b8abfbe28",
+    "right_id": "CAIL-ddba3c50ed7a867a",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-d780e1e076d30161",
+    "right_id": "CAIL-e96bac6c2388d4b3",
+    "hamming_distance": 0
+  },
+  {
+    "left_id": "CAIL-5d4037489d48e71c",
+    "right_id": "CAIL-cd8f83432bec1fb4",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-b49bcf8ab471dcf1",
+    "right_id": "CAIL-c1bf709f083acd69",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-7ec45b1b553fe14f",
+    "right_id": "CAIL-c1396bb4335fdd24",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-11332b2b8119483c",
+    "right_id": "CAIL-ad3ef943c42353c2",
+    "hamming_distance": 1
+  },
+  {
+    "left_id": "CAIL-59942c8f2169eb84",
+    "right_id": "CAIL-5dd8c067fbaeb582",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-466dfd304352ecb0",
+    "right_id": "CAIL-908488879184e465",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-3f935c39953d1990",
+    "right_id": "CAIL-93f0d0af8d0a5f10",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-287f8952fec7ec6b",
+    "right_id": "CAIL-f14f641b8909b8a2",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-760b35a82d7c83bb",
+    "right_id": "CAIL-b7609902f439ea37",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-8f57b6af44eb5fe9",
+    "right_id": "CAIL-c25b9c6390f97b34",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-1eca77abda551cf4",
+    "right_id": "CAIL-8626c8cd00af7f50",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-1d8137c4a8e8ba79",
+    "right_id": "CAIL-63f64bb274e1008a",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-63bb6f5b031dce6e",
+    "right_id": "CAIL-aace0bbe5a6b8784",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-2ba055aa44c48376",
+    "right_id": "CAIL-3a19bc6e5b8f40e4",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-cd255df99e8b53c4",
+    "right_id": "CAIL-febb24b84c6d1a78",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-4282214a8dd98d7c",
+    "right_id": "CAIL-ee5a57820cc7b909",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-29d3f2029059d98b",
+    "right_id": "CAIL-529b726f434749cb",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-acf0733f8c63a3ff",
+    "right_id": "CAIL-cd257568e71bd7ca",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-2a722ec572fdd726",
+    "right_id": "CAIL-44548598e2ab3445",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-0d1edddbe64bf312",
+    "right_id": "CAIL-7da8e47ae7aff792",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-62406585d26660a7",
+    "right_id": "CAIL-a5a892a67c7f89f1",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-4c952ad442dc6581",
+    "right_id": "CAIL-872103f3253a9892",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-5b37938c414d0abb",
+    "right_id": "CAIL-872103f3253a9892",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-100adbf86d5cba97",
+    "right_id": "CAIL-5c30d4c06262e2fa",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-28ceb5f9283d1256",
+    "right_id": "CAIL-d95156dd4002d892",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-0e24e4a2c622f3c5",
+    "right_id": "CAIL-f8ec9cf222d2395d",
+    "hamming_distance": 0
+  },
+  {
+    "left_id": "CAIL-a79c144e933603f4",
+    "right_id": "CAIL-d4d0fcb95ea3e1bd",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-872103f3253a9892",
+    "right_id": "CAIL-9741d746e37c9760",
+    "hamming_distance": 1
+  },
+  {
+    "left_id": "CAIL-5b37938c414d0abb",
+    "right_id": "CAIL-9741d746e37c9760",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-0c3e50256e848b6e",
+    "right_id": "CAIL-feb198ee756b447d",
+    "hamming_distance": 0
+  },
+  {
+    "left_id": "CAIL-82a74b556b2ea12b",
+    "right_id": "CAIL-8a9dab949a42f25e",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-224b6f05ecc1cd2f",
+    "right_id": "CAIL-58541d008fdb8dca",
+    "hamming_distance": 1
+  },
+  {
+    "left_id": "CAIL-2cad961fef3a18f2",
+    "right_id": "CAIL-ea8d40bea6c4f1f2",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-2361d59e01e414e8",
+    "right_id": "CAIL-fd24a0dc50c0cf05",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-66601e9283390df6",
+    "right_id": "CAIL-872103f3253a9892",
+    "hamming_distance": 0
+  },
+  {
+    "left_id": "CAIL-66601e9283390df6",
+    "right_id": "CAIL-9741d746e37c9760",
+    "hamming_distance": 1
+  },
+  {
+    "left_id": "CAIL-4c952ad442dc6581",
+    "right_id": "CAIL-66601e9283390df6",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-5b37938c414d0abb",
+    "right_id": "CAIL-66601e9283390df6",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-139f04b1bfef7802",
+    "right_id": "CAIL-563c174bd4c4418d",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-02dc95ba10897f21",
+    "right_id": "CAIL-28f4abef829abb67",
+    "hamming_distance": 0
+  },
+  {
+    "left_id": "CAIL-5b37938c414d0abb",
+    "right_id": "CAIL-78c200cb06e49f41",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-32c12468aac38772",
+    "right_id": "CAIL-bfc4fcc5d5046e70",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-1db1ea83cc950197",
+    "right_id": "CAIL-d9b25dacb4fddfd3",
+    "hamming_distance": 1
+  },
+  {
+    "left_id": "CAIL-9bf99d981a10e282",
+    "right_id": "CAIL-a524350823701689",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-32fe0924de88c5c9",
+    "right_id": "CAIL-ffc84024b31c0794",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-8d4fa452d387c6f5",
+    "right_id": "CAIL-e9bbaa2ac0307847",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-2d14c65189b3b992",
+    "right_id": "CAIL-c5824a44c5947943",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-4690dd61016dbfaa",
+    "right_id": "CAIL-f05cf963fb690b53",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-267c5a57edf2b4ab",
+    "right_id": "CAIL-295a0898998e9849",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-28933a0404426ddb",
+    "right_id": "CAIL-f763afa8366351c1",
+    "hamming_distance": 3
+  },
+  {
+    "left_id": "CAIL-b7a44948f1b48cc3",
+    "right_id": "CAIL-fd50b3f9f6a13b9d",
+    "hamming_distance": 0
+  },
+  {
+    "left_id": "CAIL-55f6fb596f8511c9",
+    "right_id": "CAIL-bdc161424c12a7d5",
+    "hamming_distance": 1
+  },
+  {
+    "left_id": "CAIL-17d3686518ee8f1a",
+    "right_id": "CAIL-ef8a262b674900c1",
+    "hamming_distance": 1
+  },
+  {
+    "left_id": "CAIL-15c9f15db1487f56",
+    "right_id": "CAIL-e3552605e2de2e55",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-887c85f688ca038e",
+    "right_id": "CAIL-fd6e33194750db17",
+    "hamming_distance": 1
+  },
+  {
+    "left_id": "CAIL-55dc5a444bfce0e4",
+    "right_id": "CAIL-eec6251d673f5223",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-0ba1b8eb9581dd47",
+    "right_id": "CAIL-f864a63e77cb3245",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-214bb861616d30ff",
+    "right_id": "CAIL-4413fb595e1182a2",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-5fcc5a4971492771",
+    "right_id": "CAIL-8a67db467b173a02",
+    "hamming_distance": 2
+  },
+  {
+    "left_id": "CAIL-c32feca52fd8848e",
+    "right_id": "CAIL-cfa6717d2281d1c0",
+    "hamming_distance": 1
+  }
+]

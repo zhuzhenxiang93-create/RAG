@@ -1,312 +1,221 @@
-# RouteRAG：基于 LoRA 查询路由的企业知识检索实验
+# LegalMind-RAG：证据与法条约束的刑事案件智能分析系统
 
-[![CI](https://github.com/zhuzhenxiang93-create/RAG/actions/workflows/ci.yml/badge.svg)](https://github.com/zhuzhenxiang93-create/RAG/actions/workflows/ci.yml)
+输入匿名化刑事案件事实，系统完成多标签罪名预测、法条与类案检索、候选重排、结构化分析、引用校验和不确定性控制。项目重点是可追溯的数据与实验链路，不提供法律意见。
 
-本项目研究一个明确问题：
+## 为什么做这件事
 
-> 企业知识分散在邮件、聊天、研发任务、会议纪要等不同来源中。相比对所有问题使用固定检索范围，LoRA 能否学习“问题类型 + 数据来源 + 检索深度”，进而改善相关文档召回并减少无效检索？
-
-主数据集为 [EnterpriseRAG-Bench](https://github.com/onyx-dot-app/EnterpriseRAG-Bench)。
-它模拟 Redwood Inference 公司的多源内部知识库，包含约 50 万份文档和 500 道评测问题。
-
-项目重点是 LoRA 微调、严格数据划分和对照实验。原有文档上传页面、法律分类插件和
-MASSIVE 意图分类代码保留为历史工程能力，但不再作为项目主线。
-
-## 方法
-
-```text
-问题
-  → Qwen + LoRA 结构化查询路由
-  → 预测问题类型、目标数据源、跨文档需求和检索深度
-  → BM25 / Dense / RRF
-  → 相关文档
-  → Recall@K、MRR、nDCG 与延迟评测
-```
-
-LoRA 输出示例：
-
-```json
-{
-  "question_type": "project_related",
-  "sources": ["linear", "slack", "gmail"],
-  "multi_document": true,
-  "conflict_check": false,
-  "completeness_required": true,
-  "retrieval_depth": "deep",
-  "answerability": "answerable"
-}
-```
-
-LoRA 不负责记住企业事实，也不直接生成最终答案。企业知识保留在检索库中，LoRA
-只学习相对稳定的查询理解和检索策略。
+普通罪名分类器只能给标签。真实案件还存在长文本截断、长尾罪名、相似罪名混淆和多罪名共现；直接使用生成模型又容易输出错误法条、编造案例或忽略证据不足。LegalMind-RAG 将分类、检索和生成拆成可独立评测的模块，并在最终输出前验证所有案例与法条引用。
 
 ```mermaid
 flowchart LR
-    Q["用户问题"] --> R["Qwen2.5 + QLoRA Router"]
-    R --> J["严格 JSON 路由"]
-    J --> S{"目标数据源"}
-    S --> A["Slack / Gmail"]
-    S --> B["GitHub / Jira / Linear"]
-    S --> C["Drive / Confluence / CRM / 会议"]
-    A --> BM["BM25 / Dense 候选召回"]
-    B --> BM
-    C --> BM
-    BM --> F["RRF 融合与 Top-K 文档"]
-    F --> E["Recall@K / MRR / nDCG / 延迟"]
-    OR["Oracle 来源标签"] -. 上界对照 .-> S
-    ALL["全来源固定检索"] -. 基线对照 .-> BM
+    A["匿名案件事实"] --> B["NFKC 清洗、泄漏检测、案件族去重"]
+    B --> C["Head+Tail / 中文句界事实选择"]
+    C --> D["Qwen3-4B 4-bit QLoRA 多标签分类"]
+    C --> E["BM25 / Qwen3-Embedding 类案召回"]
+    D --> F["候选罪名与不确定性"]
+    E --> G["RRF Hybrid"]
+    G --> H["Qwen3-Reranker"]
+    F --> I["罪名辅助法条检索"]
+    H --> J["证据约束结构化生成"]
+    I --> J
+    J --> K["JSON Schema、引用与人工复核校验"]
 ```
 
-## 数据隔离
+## 当前真实完成状态
 
-官方 Redwood `questions.jsonl` 只能用于最终评测，不能拆分后训练。
+| 模块 | 状态 | 实际结果 |
+|---|---|---|
+| 仓库、环境、数据审计 | 完成 | 4 份审计报告；原文件只读 |
+| processed_v2 数据 | 完成 | 120,393 / 15,032 / 15,097；202 标签 |
+| 数据隔离 | 完成 | 精确、规范化文本和案件族跨集合重叠均为 0 |
+| Majority Baseline | 完成 | 验证集 Micro-F1 0.0572 |
+| char TF-IDF + Linear | 完成 | 验证集 Micro-F1 0.8092 |
+| 历史 10K QLoRA | 保留 | 验证 0.8332，独立测试 0.8296 Micro-F1 |
+| v2 QLoRA Smoke | 完成 | 1,000/100，Micro-F1 0.0073，仅验证链路 |
+| v2 Full QLoRA | `running_resumed` | 已核验 `checkpoint-500` 并从第 501 步安全续训；最终指标待完成 |
+| 法条库 | 完成 | 官方政府页面自动下载并解析为 452 个唯一条号，未人工逐条审核 |
+| 案例库 | 完成 | 仅训练集 120,393 案、128,107 Chunk |
+| 全库 BM25 Pilot | 完成 | 200 查询，代理 MRR@10 0.4654、nDCG@10 0.2846 |
+| Qwen3 Dense/Reranker Pilot | 完成 | 5,000 Chunk、100 查询；见下表 |
+| 检索审核集 | 完成 | 200 查询、1,139 候选、1,152 条 silver qrels；人工审核 0 |
+| Reranker 难负样本 | 完成 | train-only 14,536 三元组、4,882 个查询，全部 `unreviewed` |
+| 生成 SFT v3.1 数据 | 完成 | train 4,500 / validation 550，含 500/50 条信息不足样本 |
+| 生成 SFT Smoke | 完成 | 100/20；训练 46.6 秒，峰值 9.46 GiB |
+| DPO/GRPO | 不实施 | 前置质量门槛未满足 |
+| 测试与静态检查 | 完成 | 53 passed；Ruff check/format 通过 |
 
-```text
-独立生成的训练公司 questions.jsonl
-  └── LoRA train / validation
+所有 Full、Smoke、Pilot 和历史实验在文档中明确区分。仓库没有把计划值写成实验结果。
 
-官方 Redwood questions.jsonl
-  └── benchmark only
+## 环境激活
+
+所有命令都应在项目 Conda 环境中运行。SSH 登录后先执行：
+
+```bash
+cd /root/autodl-tmp/LegalMind-RAG
+source /root/miniconda3/etc/profile.d/conda.sh
+conda activate /root/autodl-tmp/conda/envs/legalmind
+export PYTHONPATH=src
+export OMP_NUM_THREADS=8
 ```
 
-`prepare_enterprise_router.py` 会检查：
+未激活环境时，系统 Python 可能缺少 `pydantic`、PyTorch 或 PEFT。下文保留完整环境变量前缀，使单条命令也便于复制。
 
-- 训练文件和评测文件是否为同一路径；
-- `question_id` 是否重复；
-- 规范化问题文本的 SHA-256 是否重复。
+## 数据与许可状态
 
-样例文件 `data/samples/enterprise_router_train.sample.jsonl` 仅用于测试训练链路，
-不能用于报告模型效果。
+当前服务器上的主分类文件 `data/train_data.jsonl` 是 CAIL2018 的历史派生文件，共 154,592 条，SHA256 为 `5d287aed962c8387f751c0fdd0599ea105469dfb0a0f80a89ce239373853e404`。它保留罪名和量刑信息，但已经丢失原始 `relevant_articles`。其本机来源状态记录为 `legacy_local_file_unverified`，对外发布前必须用 CAIL 官方原始文件复现并补充许可证据。
 
-## 1. 安装
+`data/local_legacy/rest_data.jsonl` 有 748,203 条，但来源、分布和与训练集重叠尚不足以证明适合训练，因此没有并入 v2。独立旧测试文件只有 300 条且与训练源存在重叠，也没有直接作为 v2 最终测试集。
 
-Lite 工程测试：
+数据流水线执行：Unicode NFKC、控制字符与空白清理、低信息文本过滤、显式目标语句遮蔽、精确/规范化/近重复检测和案件族分组切分。标签映射只由训练集建立。processed_v2 实际数量：
 
-```powershell
-python -m pip install -r requirements-lite.txt
+- train：120,393
+- validation：15,032
+- test：15,097
+- 标签：202
+- 多集合精确、规范化文本与 dedup group 重叠：0
+- 显式罪名结论被遮蔽：train 58,189；validation 7,247；test 7,220
+- 自动生成和旧数据均未宣称人工金标
+
+处理后哈希与全部统计位于 `data/processed_v2/dataset_manifest.json`、`data/processed_v2/file_hashes.json` 和 `reports/data/`。
+
+法条文本来自国家统计局公开的《中华人民共和国刑法》页面：<https://www.stats.gov.cn/gk/tjfg/xgfxfg/202503/t20250311_1958931.html>。下载时间、原始 HTML/文本 SHA256、页面说明和解析状态记录在 `data/raw/statutes/manifest.json`。页面标注包含刑法修正案（十二），项目仍将自动解析结果标为 `unreviewed`；实际法律使用前必须核验时效和正文。
+
+## 分类与 QLoRA
+
+任务保留一案多罪，使用 multi-hot 标签与 `BCEWithLogitsLoss`。正式分类主指标统一为 Micro-F1；本项目中存在多标签样本，因此它不等同于简单 Accuracy。
+
+QLoRA 配置：Qwen3-4B、4-bit NF4、double quant、BF16、LoRA `r=16/alpha=32/dropout=0.05`、`all-linear`、gradient checkpointing、动态 Padding、`pad_to_multiple_of=8` 和长度分桶。LoRA 训练低秩增量，4-bit 基座保持冻结，Adapter 独立保存。
+
+4090D 同一 2,048 token 压力条件下的实际 Batch Benchmark：
+
+| micro batch | accumulation | 有效 batch | 峰值 allocated | 结果 |
+|---:|---:|---:|---:|---|
+| 2 | 16 | 32 | 9.30 GiB | 完成 |
+| 4 | 8 | 32 | 15.24 GiB | 完成，当前选择 |
+| 8 | 4 | 32 | 21.72 GiB | OOM |
+
+2,000 条样本的 Padding 审计：固定 2,048 长度 Padding Ratio 0.8346；随机动态 Padding 0.4671；动态 Padding + 长度分桶 0.0139。不同样本不会通过“拼接”看到彼此 token。
+
+```bash
+OMP_NUM_THREADS=8 PYTHONPATH=src python -m legalmind.data.build_dataset \
+  --config configs/data/processed_v2.yaml
+
+OMP_NUM_THREADS=8 PYTHONPATH=src python -m legalmind.baselines \
+  --data-dir data/processed_v2 \
+  --output-dir artifacts/experiments/baselines_v2
+
+# v2 Smoke
+OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/train_qlora.py \
+  --training-config configs/classification/qwen3_4b_qlora_smoke.yaml
+
+# v2 Full，输出目录独立
+OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/train_qlora.py \
+  --training-config configs/classification/qwen3_4b_qlora_full.yaml
+
+# 中断后自动从最新 checkpoint 恢复
+OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/train_qlora.py \
+  --training-config configs/classification/qwen3_4b_qlora_full.yaml \
+  --resume-from-checkpoint
 ```
 
-LoRA 和真实向量模型：
+训练支持自动发现最新 Checkpoint、断点续训、独立实验目录、数据哈希、环境版本、耗时、吞吐量、Padding Ratio、峰值显存与验证 Micro-F1。测试集不用于阈值或超参数选择。
 
-```powershell
-python -m pip install -r requirements-full.txt
-```
+## 长文本处理
 
-QLoRA 的 4-bit 模式还需要受支持的 CUDA 与 bitsandbytes 环境。
+先用 Qwen3 tokenizer 统计长度，再选择 2,048 token 训练上限。代码实现前截断、Head+Tail 和中文句界事实片段选择。句界策略只使用输入事实中的行为主体、方式、工具、金额、伤情、结果、主观意图、自首、累犯、赔偿和谅解线索，不读取测试标签。三种策略的 Full Micro-F1 消融仍为 `not_run`。
 
-## 2. 下载官方评测问题
+## 检索、难负样本与 Reranker
 
-```powershell
-python scripts\download_enterprise_rag_bench.py `
-  --output data\enterprise_rag_bench
-```
+案例 Chunk 按句界切分为 1,024 token、128 token overlap，保留 `case_id/chunk_id/source_split/accusation/text_sha256`。测试与验证案例不会进入知识库。
 
-文档体积较大，建议从官方 Release 或 Hugging Face 先下载某个来源的切片，再逐步扩大。
-解压后统一放置为：
+全库稀疏 BM25 的 200 查询实验使用“共享罪名”自动代理相关性：MRR@10 0.4654、nDCG@10 0.2846、HitRate@10 0.765。Recall@10 只有 0.0007，因为同罪名相关集合非常大；该定义更适合快速回归，不等价于人工类案相关性。
 
-```text
-data/enterprise_rag_bench/corpus/
-├── slack/*.txt
-├── gmail/*.txt
-├── github/*.txt
-├── jira/*.txt
-└── ...
-```
+同一 5,000-Chunk、100-query Pilot 的结果：
 
-## 3. 准备 LoRA 数据
-
-仓库提供不读取官方测试题的 Northstar Labs 独立训练集生成器。正式 V2 使用
-`production-shaped` 流量先验生成 2,000 条；`balanced` 可用于类别均衡消融：
-
-```powershell
-python scripts\generate_router_training_questions.py `
-  --output data\enterprise_router\northstar_questions.jsonl `
-  --profile production-shaped `
-  --seed 20260727
-```
-
-然后划分训练/验证集并将官方题只登记为 benchmark：
-
-```powershell
-python scripts\prepare_enterprise_router.py `
-  --train-questions data\enterprise_router\northstar_questions.jsonl `
-  --benchmark-questions data\enterprise_rag_bench\benchmark\questions.jsonl `
-  --output data\enterprise_router `
-  --validation-ratio 0.15 `
-  --seed 42
-```
-
-额外的模糊污染检查：
-
-```powershell
-python scripts\check_router_leakage.py `
-  --train data\enterprise_router\northstar_questions.jsonl `
-  --benchmark data\enterprise_rag_bench\benchmark\questions.jsonl `
-  --max-token-jaccard 0.8
-```
-
-V2 固定数据产物为训练 1,700 条、验证 300 条、官方测试 500 条；精确重合为 0，
-最大两两词集合 Jaccard 为 0.233333。该数值只用于污染审计，不是模型效果。
-
-## 4. 训练 LoRA
-
-```powershell
-python scripts\train_enterprise_router_lora.py `
-  --data-dir data\enterprise_router `
-  --base-model Qwen/Qwen2.5-1.5B-Instruct `
-  --output artifacts\enterprise-router-lora `
-  --rank 16 `
-  --alpha 32 `
-  --epochs 3 `
-  --learning-rate 2e-4 `
-  --batch-size 2 `
-  --gradient-accumulation-steps 8 `
-  --bf16 `
-  --load-in-4bit
-```
-
-首次只验证显存、依赖和数据链路：
-
-```powershell
-python scripts\train_enterprise_router_lora.py `
-  --data-dir data\enterprise_router `
-  --output artifacts\enterprise-router-smoke `
-  --smoke-max-steps 2
-```
-
-Smoke 结果不能作为正式实验指标。
-
-## 5. 路由器对照实验
-
-基础模型零样本：
-
-```powershell
-python scripts\evaluate_enterprise_router.py `
-  --data data\enterprise_router\benchmark.jsonl `
-  --base-model Qwen/Qwen2.5-1.5B-Instruct `
-  --load-in-4bit `
-  --offline `
-  --output artifacts\base-router.json
-```
-
-LoRA：
-
-```powershell
-python scripts\evaluate_enterprise_router.py `
-  --data data\enterprise_router\benchmark.jsonl `
-  --base-model Qwen/Qwen2.5-1.5B-Instruct `
-  --adapter artifacts\enterprise-router-lora\adapter `
-  --load-in-4bit `
-  --offline `
-  --output artifacts\lora-router.json
-```
-
-路由指标包括：
-
-- JSON 合法率；
-- 完整路由严格准确率；
-- 问题类型准确率；
-- 数据来源 Micro/Macro-F1；
-- 跨文档、冲突与完整性字段 F1。
-
-## 6. 端到端检索实验
-
-官方仓库提供 JSON 文档时，可构建一个包含全部金标准文档、每来源 5,000 个确定性负例
-的约 4.5 万文档子集。导出器会扫描完整语料并在金标准覆盖率不足 100% 时失败：
-
-```powershell
-python scripts\export_enterprise_rag_corpus.py `
-  --sources-dir D:\datasets\EnterpriseRAG-Bench\generated_data\sources `
-  --questions data\enterprise_rag_bench\benchmark\questions.jsonl `
-  --output data\enterprise_rag_bench\corpus_5k_v2 `
-  --distractors-per-source 5000
-```
-
-全数据源固定检索：
-
-```powershell
-python scripts\run_enterprise_retrieval_benchmark.py `
-  --corpus-dir data\enterprise_rag_bench\corpus_5k_v2 `
-  --questions data\enterprise_rag_bench\benchmark\questions.jsonl `
-  --routing all `
-  --retrieval hybrid `
-  --dense-backend sentence-transformers `
-  --output artifacts\retrieval-all.json
-```
-
-LoRA 路由：
-
-```powershell
-python scripts\run_enterprise_retrieval_benchmark.py `
-  --corpus-dir data\enterprise_rag_bench\corpus_5k_v2 `
-  --questions data\enterprise_rag_bench\benchmark\questions.jsonl `
-  --routing lora `
-  --router-predictions artifacts\lora-router.json `
-  --retrieval hybrid `
-  --dense-backend sentence-transformers `
-  --output artifacts\retrieval-lora.json
-```
-
-Oracle 上界：
-
-```powershell
-python scripts\run_enterprise_retrieval_benchmark.py `
-  --corpus-dir data\enterprise_rag_bench\corpus_5k_v2 `
-  --questions data\enterprise_rag_bench\benchmark\questions.jsonl `
-  --routing oracle `
-  --retrieval hybrid `
-  --dense-backend sentence-transformers `
-  --output artifacts\retrieval-oracle.json
-```
-
-`hashing-smoke` 仅用于 CPU 流程验证，不是真实语义向量模型，不能用于最终结论。
-
-## 实验矩阵
-
-| 实验 | 路由 | 检索 | 作用 |
-|---|---|---|---|
-| A | 全来源 | BM25 | 稀疏检索基线 |
-| B | 全来源 | Dense | 向量检索基线 |
-| C | 全来源 | BM25 + Dense + RRF | 混合检索基线 |
-| D | 基础模型零样本 | Hybrid | 判断微调是否必要 |
-| E | LoRA | Hybrid | 项目核心方法 |
-| F | Oracle 标签 | Hybrid | 路由方法理论上界 |
-
-## 已复现的正式结果
-
-环境：RTX 4060 Laptop 8 GB、PyTorch 2.11.0+cu128、Qwen2.5-1.5B-Instruct。
-V2 QLoRA 使用 4,358,144 个可训练参数（0.2815%），训练 2 轮耗时 966.78 秒。
-
-| 方法 | JSON 合法率 | 类型 Macro-F1 | 来源 Micro-F1 |
-|---|---:|---:|---:|
-| Base zero-shot | 0.0000 | 0.0000 | 0.0000 |
-| V2 LoRA | 0.9940 | 0.1089 | 0.3237 |
-
-45,278 文档 BM25 子集覆盖 722/722 个金标准文档：
-
-| 路由 | Recall@10 | MRR | nDCG@10 | 平均延迟 |
+| 方法 | Recall@10 | MRR@10 | nDCG@10 | HitRate@10 |
 |---|---:|---:|---:|---:|
-| 全来源 | 0.5827 | 0.2096 | 0.2843 | 248.27 ms |
-| V2 LoRA 硬路由 | 0.3844 | 0.1996 | 0.2321 | 145.62 ms |
-| Oracle | 0.7848 | 0.6881 | 0.6962 | 38.15 ms |
+| BM25 | 0.0061 | 0.8520 | 0.7848 | 1.0000 |
+| Qwen3 Dense | 0.0076 | 1.0000 | 0.9863 | 1.0000 |
+| RRF Hybrid | 0.0069 | 0.9700 | 0.9013 | 1.0000 |
+| Hybrid + 预训练 Reranker | 0.0072 | 0.9800 | 0.9467 | 1.0000 |
 
-结论不是“LoRA 提升召回”：硬路由将平均检索延迟降低 41.3%，但 Recall@10 绝对下降
-0.1983，不能直接上线。Oracle 结果证明来源路由有潜力，而 V1→V2 的有限改善说明
-跨公司模板数据仍存在明显分布偏移。下一步应使用排除 722 个金文档后的同域语料生成
-训练问题，并采用软路由或低置信度全源回退。原始逐条预测与汇总依据见
-`docs/enterprise-router-results.md`；可审计的逐条预测和逐题检索结果位于
-`results/enterprise_router_v2/`。
+Reranker 改善了 Hybrid，但未超过 Dense。Qrels 没有人工审核，当前不能声称真实法律相关性提升。新评测集从 validation 选择 200 条查询，候选只来自 train；生成 1,152 条 `silver_proxy/unreviewed` qrels 和可人工填写的 CSV，`reviewed_qrels.jsonl` 当前为空。
 
-## 测试
+train-only 难负样本挖掘从 5,000 个查询中生成 14,536 个三元组，覆盖同罪名不同行为、金额、结果、主观意图、共同犯罪和既遂/未遂等 8 类。领域 Reranker Pilot 已实现，正式训练与同评测集对比要等待 Full 分类训练释放 GPU。
 
-```powershell
-python -m unittest discover -s tests -v
-python -m compileall -q app scripts tests
+```bash
+OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/build_knowledge.py
+OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/build_bm25_experiment.py \
+  --output-dir artifacts/experiments/bm25_sparse64_eval_v2 --max-queries 200
+HF_ENDPOINT=https://hf-mirror.com OMP_NUM_THREADS=8 PYTHONPATH=src \
+  python scripts/run_dense_reranker_experiment.py \
+  --config configs/retrieval/qwen3_pilot.yaml
+
+OMP_NUM_THREADS=4 PYTHONPATH=src python scripts/build_reranker_data.py \
+  --queries 5000 --negatives-per-query 3 --seed 42
+
+PYTHONPATH=src python scripts/build_retrieval_eval.py --queries 200 --seed 42
 ```
 
-## 关键文档
+## 结构化生成与 SFT
 
-- `docs/enterprise-router-lora.md`：LoRA 原理、训练实现和实验规范；
-- `docs/enterprise-router-interview.md`：三分钟面试讲解与追问；
-- `docs/enterprise-router-experiments.md`：实验记录模板；
-- `configs/enterprise_router_lora.json`：初始可复现实验配置。
+生成输出字段固定为：`predicted_accusations`、`relevant_articles`、`key_facts`、`missing_information`、`similar_cases`、`analysis`、`confidence` 和 `requires_manual_review`。案例与法条引用必须来自本次检索上下文。
+
+SFT v3.1 使用第一版简化 Schema：`candidate_accusations/key_facts/confidence/requires_manual_review`。训练数据 4,500 条，validation 550 条；其中 500/50 条把训练或验证案件确定性裁剪为信息不足输入，目标为空罪名、低置信度并触发人工复核。所有目标通过 Pydantic Schema，train/validation 来源案件重叠为 0，test 使用数为 0，全部保持 `unreviewed`。
+
+旧评测把字段名不匹配也计入 JSON 失败。逐条复核同一 20 条 Smoke 后，Prompt Baseline 原始 JSON 可解析率为 1.00，100 条 SFT Adapter 为 0.95；两者旧 Full Schema 通过率仍为 0。主要问题是中文字段名、中文置信度、罪名后缀和 1 条输出截断。确定性规范化修复后，简化 Schema 通过率分别为 1.00/0.95，罪名字段 Micro-F1 为 0.9091/0.9048。这只是 20 条 Smoke 诊断，不能作为正式生成结果。v3.1 Pilot 尚未训练。
+
+```bash
+PYTHONPATH=src python scripts/build_simple_sft.py --output-dir data/sft_v3_1
+PYTHONPATH=src python scripts/validate_interview_datasets.py
+PYTHONPATH=src python -m legalmind.training.train_generator \
+  --config configs/generation/qwen3_4b_sft_v3_pilot.yaml
+```
+
+## 不确定性与降级
+
+- 分类没有标签超过验证阈值时，状态为 `uncertain_below_threshold`，记录 `used_fallback` 和最大概率；
+- Fallback 候选只取前三个进入分析，并强制 `requires_manual_review=true`；
+- 法条检索优先用候选罪名召回定义性条款，再补最多一条事实情节条款；
+- 没有分类器、索引、Reranker 或生成模型时，统一入口显式返回降级状态；
+- 最终 JSON 逐项校验案例 ID 和法条是否存在于检索结果。
+
+```bash
+OMP_NUM_THREADS=8 python -m src.legalmind.pipeline.analyze_case \
+  --fact-file examples/case.txt \
+  --config configs/pipeline/default.yaml
+```
+
+实际 Demo 的模型加载后阶段耗时约 0.85 秒；示例触发了 `uncertain_below_threshold`、引用校验通过并要求人工复核。该单条时间不代表服务压测吞吐量。
+
+## 为什么暂不做 DPO / GRPO
+
+生成 SFT 尚未稳定，法条标签缺失，检索 qrels 未经人工审核，也没有真实 chosen/rejected 偏好对。当前瓶颈优先通过恢复原始 CAIL 字段、人工检索标注、SFT 数据审核和普通 SFT 解决。决策记录见 `reports/alignment/rl_decision.md`。满足门槛后优先小规模 DPO，不直接加入 GRPO。
+
+## 测试、审计和实验
+
+```bash
+OMP_NUM_THREADS=8 PYTHONPATH=src pytest -q
+ruff check .
+ruff format --check .
+OMP_NUM_THREADS=8 PYTHONPATH=src python -m legalmind.data.validate \
+  --data-dir data/processed_v2
+OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/build_experiment_index.py
+```
+
+每个新实验使用 `artifacts/experiments/<name>/`，保存配置、数据哈希、Manifest、指标、预测、日志和 Checkpoint。历史结果不覆盖。本阶段备份位于 `/root/autodl-tmp/backups/legalmind_interview_ready_20260820T205654Z/`。
+
+## 已知局限
+
+- 当前 CAIL 派生文件的下载来源和许可尚未在服务器上恢复，且缺少法条字段；
+- 自动罪名泄漏遮蔽命中比例较高，需要法律专业人员抽样审核；
+- 202 类具有明显长尾，Micro-F1 会被高频类别主导；
+- 检索指标使用共享罪名代理 qrels，人工相关性评测待完成；
+- 领域难负样本已经构造，Reranker 微调与同评测集对比尚未运行；
+- v2 Full 分类正在从 checkpoint-500 续训，长文本消融和 SFT v3.1 Pilot 尚未运行；
+- 法条页面与自动解析结果未经过专业人员逐条核验；
+- 项目输出只用于算法实验，不能作为案件判断、量刑建议或其他法律意见。
+
+## 面试材料
+
+20–30 分钟项目讲解、深挖问题与中英文简历版本位于 `docs/interview/`。回答只引用当前代码和实际实验；待测内容均保持 `not_run` 或 `pending_manual_review`。

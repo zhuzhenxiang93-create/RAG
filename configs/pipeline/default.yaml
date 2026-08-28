@@ -1,0 +1,14 @@
+classifier:
+  enabled: true
+  base_model: Qwen/Qwen3-4B
+  adapter: artifacts/models/qwen3_4b_qlora_10k
+  label_mapping: data/processed_v2/label_mapping.json
+  thresholds: artifacts/results/classifier_10k_2k/thresholds.json
+  max_length: 2048
+retrieval:
+  bm25_index: artifacts/experiments/bm25_sparse64_eval_v2/index
+  statute_bm25_index: artifacts/indexes/statutes_bm25_v2
+  top_k: 5
+generation:
+  mode: deterministic_grounded_baseline
+  require_citation_validation: true

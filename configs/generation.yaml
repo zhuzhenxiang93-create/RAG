@@ -1,0 +1,8 @@
+model: qwen3.7-plus
+base_url_env: DASHSCOPE_BASE_URL
+api_key_env: DASHSCOPE_API_KEY
+max_tokens: 4096
+temperature: 0.7
+top_p: 0.8
+top_k: 20
+presence_penalty: 1.5

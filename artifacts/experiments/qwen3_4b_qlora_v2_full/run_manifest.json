@@ -1,0 +1,26 @@
+{
+  "status": "running",
+  "source_revision": "1daafc5",
+  "environment": {
+    "python": "3.11.15",
+    "platform": "Linux-5.15.0-94-generic-x86_64-with-glibc2.35",
+    "torch": "2.5.1+cu124",
+    "cuda": "12.4",
+    "cuda_available": true,
+    "gpu": "NVIDIA GeForce RTX 4090 D"
+  },
+  "experiment_type": "classification_qlora_full",
+  "scope": "full",
+  "model": "Qwen/Qwen3-4B",
+  "process_id": 8949,
+  "train_rows": 120393,
+  "validation_rows": 15032,
+  "test_rows_used": 0,
+  "total_steps": 7526,
+  "data_sha256": {
+    "train": "8d57c9719083eb544d08a7c4aed60b6942a94c0c094e43a43b9dc95524db23b0",
+    "validation": "9d5e763a50e37b58749ab996f4b83ff7ca7a62183a751bb8a90541568123dfa0",
+    "label_mapping": "0595297115fd9df0e78d42a64dbb3d6286da9b807d3005a4278bfc3e51ca301f"
+  },
+  "metrics_status": "pending_training_completion"
+}

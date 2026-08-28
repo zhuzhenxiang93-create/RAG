@@ -1,0 +1,12 @@
+{
+  "raw_rows": 154592,
+  "exact_duplicate_rows": 3407,
+  "normalized_duplicate_rows": 3408,
+  "near_duplicate_algorithm": "SimHash64 character-trigram, four 16-bit LSH bands",
+  "near_duplicate_threshold": 3,
+  "near_duplicate_scan_rows": 20000,
+  "near_duplicate_candidate_pairs": 86,
+  "near_duplicate_pairs_truncated": false,
+  "cross_split_exact": 0,
+  "cross_split_normalized": 0
+}

@@ -1,0 +1,16 @@
+{
+  "status": "completed",
+  "batch_size": 2,
+  "gradient_accumulation_steps": 16,
+  "effective_batch_size": 32,
+  "sequence_length": 2048,
+  "effective_tokens": 4096,
+  "padding_tokens": 0,
+  "padding_ratio": 0.0,
+  "loss": 1.127851128578186,
+  "error": null,
+  "step_seconds": 3.816716432571411,
+  "peak_allocated_gib": 9.3049898147583,
+  "peak_reserved_gib": 11.619140625,
+  "gpu_name": "NVIDIA GeForce RTX 4090 D"
+}

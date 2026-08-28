@@ -1,0 +1,26 @@
+{
+  "dataset_version": "retrieval-eval-v1",
+  "seed": 42,
+  "query_source_split": "validation_only",
+  "candidate_source_split": "train_only",
+  "reviewed_qrels": 0,
+  "manual_review_status": "pending",
+  "license_status": "inherits_CAIL2018_legacy_local_unverified",
+  "queries": 200,
+  "unique_candidates": 1139,
+  "silver_qrels": 1152,
+  "queries_without_positive_candidate": 4,
+  "automatic_reason_distribution": {
+    "shared_charge_only": 121,
+    "surface_similar_different_charge": 571,
+    "shared_charge_and_fact_dimension": 460
+  },
+  "judgment_source": "silver_proxy_unreviewed",
+  "file_sha256": {
+    "queries.jsonl": "c5b22bbfa333ed0fa1c6e1c5d55524d3aa95a757225c2893a978f236a8b4692f",
+    "candidate_pool.jsonl": "d908a9743cb5c3822e49c93f9b8635938486febc23b15b094c76b921cd152122",
+    "silver_qrels.jsonl": "008f773a4834cbc2fafbf3b81bc43950a1c9d7264c85052006e884af99a6b9aa",
+    "reviewed_qrels.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "manual_review_queue.csv": "824bcccff889a77faf039c38fb631a40af4694bb5cb11865ba257f31c730ab16"
+  }
+}

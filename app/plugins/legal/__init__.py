@@ -1,1 +1,0 @@
-"""Optional legal-domain plugin."""

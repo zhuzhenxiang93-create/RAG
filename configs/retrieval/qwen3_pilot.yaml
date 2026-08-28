@@ -1,0 +1,22 @@
+embedding_model: Qwen/Qwen3-Embedding-0.6B
+embedding_license: Apache-2.0
+query_instruction: >-
+  Given an anonymized Chinese criminal case fact, retrieve cases with legally
+  relevant conduct, intent, result, accusation, and applicable statute.
+embedding_max_length: 1024
+embedding_dimension: 1024
+embedding_batch_size: 8
+reranker_model: Qwen/Qwen3-Reranker-0.6B
+reranker_license: Apache-2.0
+reranker_max_length: 1024
+reranker_batch_size: 8
+chunks: data/knowledge/cases/case_chunks.jsonl
+queries: data/processed_v2/validation.jsonl
+output_dir: artifacts/experiments/qwen3_retrieval_reranker_v2_pilot
+max_chunks: 5000
+max_queries: 100
+candidate_k: 30
+fusion_top_k: 20
+evaluation_k: 10
+rrf_k: 60
+seed: 42

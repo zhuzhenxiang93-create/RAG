@@ -1,0 +1,18 @@
+raw:
+  train: data/train_data.jsonl
+  validation: null
+  test: null
+label_mapping: data/manifests/label_mapping.json
+manifest_path: data/manifests/cail2018_multilabel_manifest.json
+output_dir: artifacts/datasets/cail2018_multilabel
+text_field: fact
+labels_field: accusation
+articles_field: relevant_articles
+seed: 42
+validation_ratio: 0.10
+test_ratio: 0.10
+max_train_samples: null
+min_text_chars: 20
+max_boilerplate_chars: 120
+provenance_status: legacy_local_file_unverified
+source_url: null

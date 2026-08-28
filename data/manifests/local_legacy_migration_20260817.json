@@ -1,0 +1,54 @@
+{
+  "created_at_utc": "2026-08-17T10:21:00Z",
+  "destination": "/root/autodl-tmp/LegalMind-RAG/data/local_legacy",
+  "provenance_status": "legacy_local_file_unverified",
+  "included": [
+    {
+      "path": "data/rest_data.jsonl",
+      "bytes": 849106498,
+      "rows": 748203,
+      "sha256": "51cfa062ea828e5f21e8b883574dccbcb4d4324b3b6f092bae97eed7b19bf755",
+      "role": "additional_legacy_legal_records"
+    },
+    {
+      "path": "data/test_data.jsonl",
+      "bytes": 381342,
+      "rows": 300,
+      "sha256": "7acd957ce8d49d58175cc3f046a9b83bde70e6d992cf9ff4d2d3e02d3b709c67",
+      "role": "legacy_small_test_records"
+    }
+  ],
+  "already_present_with_matching_sha256": [
+    "data/train_data.jsonl",
+    "artifacts/datasets/cail2018_multilabel/train.jsonl",
+    "artifacts/datasets/cail2018_multilabel/validation.jsonl",
+    "artifacts/datasets/cail2018_multilabel/test.jsonl",
+    "artifacts/datasets/cail2018_multilabel/label_mapping.json"
+  ],
+  "excluded_regenerable_intermediates": [
+    {
+      "path": "data/train_data_classify.jsonl",
+      "reason": "derived from data/train_data.jsonl and can be regenerated"
+    },
+    {
+      "path": "data/train_data_classify_token",
+      "reason": "tokenizer-specific cache with row count inconsistent with the source data"
+    },
+    {
+      "path": "data/test_data_classify_token",
+      "reason": "tokenizer-specific cache with row count inconsistent with the source data"
+    }
+  ],
+  "code_comparison": {
+    "normalization": "CRLF converted to LF before hashing",
+    "src_legalmind_files": 28,
+    "src_legalmind_sha256": "c527467e700bc6a6f16f95b57a1d4564e08df0c99a8116fba881a114cd2370e4",
+    "legal_config_files": 8,
+    "legal_configs_sha256": "3592c6077e579381b5dca262806b9660d2e704ab648c73b0e51bd8635d5eb319",
+    "legal_script_files": 10,
+    "legal_scripts_sha256": "66989476f0acb3b94bbb51e494061899413041031999c45a331e4ebe954f98cc",
+    "legacy_test_files": 10,
+    "legacy_tests_sha256": "f9a2146dd7e6168703c3c97ae42976b47013b6c90f1d8bb710730c5b5d4b6c12",
+    "remote_match": true
+  }
+}

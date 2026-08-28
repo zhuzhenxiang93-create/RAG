@@ -1,0 +1,65 @@
+{
+  "train": {
+    "rows": 120393,
+    "single_label_rows": 94251,
+    "multi_label_rows": 26142,
+    "labels_present": 202,
+    "labels_missing": [],
+    "label_frequency_min": 13,
+    "label_frequency_max": 7694,
+    "fact_characters": {
+      "min": 20,
+      "p50": 352,
+      "p90": 819,
+      "p95": 1123,
+      "p99": 2625,
+      "max": 56216
+    },
+    "target_leakage_removed_rows": 58189,
+    "review_status": {
+      "unreviewed": 120393
+    }
+  },
+  "validation": {
+    "rows": 15032,
+    "single_label_rows": 11790,
+    "multi_label_rows": 3242,
+    "labels_present": 202,
+    "labels_missing": [],
+    "label_frequency_min": 1,
+    "label_frequency_max": 962,
+    "fact_characters": {
+      "min": 20,
+      "p50": 354,
+      "p90": 806,
+      "p95": 1120,
+      "p99": 2597,
+      "max": 34640
+    },
+    "target_leakage_removed_rows": 7247,
+    "review_status": {
+      "unreviewed": 15032
+    }
+  },
+  "test": {
+    "rows": 15097,
+    "single_label_rows": 11826,
+    "multi_label_rows": 3271,
+    "labels_present": 202,
+    "labels_missing": [],
+    "label_frequency_min": 2,
+    "label_frequency_max": 962,
+    "fact_characters": {
+      "min": 21,
+      "p50": 353,
+      "p90": 820,
+      "p95": 1121,
+      "p99": 2487,
+      "max": 42575
+    },
+    "target_leakage_removed_rows": 7220,
+    "review_status": {
+      "unreviewed": 15097
+    }
+  }
+}

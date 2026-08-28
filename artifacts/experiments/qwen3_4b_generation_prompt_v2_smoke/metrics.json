@@ -1,0 +1,8 @@
+{
+  "rows": 20,
+  "json_parse_rate": 0.0,
+  "schema_pass_rate": 0.0,
+  "accusation_micro_f1": 0.0,
+  "citation_grounded_rate": 0.0,
+  "unsupported_citations": 0
+}

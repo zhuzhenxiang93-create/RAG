@@ -1,0 +1,18 @@
+classifier:
+  model: Qwen/Qwen3-4B
+  role: multi_label_sequence_classification
+  adaptation: 4bit_qlora
+embedder:
+  model: qwen3.7-text-embedding
+  role: dense_retrieval
+  deployment: alibaba_model_studio_api
+  output_dimension: 1024
+reranker:
+  model: qwen3-rerank
+  role: cross_encoder_reranking
+  deployment: alibaba_model_studio_api
+generator:
+  model: qwen3.7-plus
+  role: grounded_report_generation
+  deployment: alibaba_model_studio_api
+  runtime_context_cap: 32768

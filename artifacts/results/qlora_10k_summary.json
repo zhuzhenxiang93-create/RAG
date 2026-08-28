@@ -1,0 +1,50 @@
+{
+  "scope": "coverage experiment; not the final full-data benchmark",
+  "hardware": "RTX 4090D 24GB",
+  "training": {
+    "train_rows": 10000,
+    "validation_rows": 2000,
+    "epochs": 2,
+    "labels_present_train": 202,
+    "labels_present_validation": 202,
+    "elapsed_seconds": 6898.501585006714,
+    "peak_gpu_memory_gib": 9.45620584487915,
+    "train_loss": 0.24471564997975437
+  },
+  "epoch_1_validation": {
+    "macro_f1": 0.5021,
+    "micro_f1": 0.7928
+  },
+  "epoch_2_validation": {
+    "macro_f1": 0.6071768863156204,
+    "micro_f1": 0.8331635771032797,
+    "micro_precision": 0.8588828223435532,
+    "micro_recall": 0.8089398734177216,
+    "hamming_loss": 0.0020272277227722773
+  },
+  "independent_reload_test": {
+    "validation_rows": 2000,
+    "test_rows": 2000,
+    "labels_supported": 202,
+    "macro_f1": 0.6052039537057795,
+    "micro_f1": 0.8295845997973658,
+    "micro_precision": 0.8434281005356407,
+    "micro_recall": 0.8161881977671451,
+    "hamming_loss": 0.002081683168316832,
+    "support_groups": {
+      "rare_1_5": {
+        "labels": 111,
+        "macro_f1": 0.4125193625193625
+      },
+      "medium_6_20": {
+        "labels": 29,
+        "macro_f1": 0.8120944193736833
+      },
+      "frequent_21_plus": {
+        "labels": 62,
+        "macro_f1": 0.8534001814045388
+      }
+    }
+  },
+  "caveat": "The 2K evaluation subsets are coverage-first stratified samples and do not preserve the untouched test distribution. Replace these values with a full 15,033-row test evaluation after full-data training."
+}

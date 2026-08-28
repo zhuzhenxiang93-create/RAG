@@ -1,0 +1,17 @@
+{
+  "scope": "validation",
+  "primary_metric": "micro_f1",
+  "train_rows": 120393,
+  "validation_rows": 15032,
+  "num_labels": 202,
+  "majority": {
+    "micro_f1": 0.05716492854383932,
+    "predicted_label_id": 99
+  },
+  "tfidf_sgd_ovr": {
+    "micro_f1": 0.8091628959276018,
+    "features": 60000,
+    "analyzer": "character_2_4_grams"
+  },
+  "elapsed_seconds": 243.03921889141202
+}

@@ -1,0 +1,5 @@
+generator_context_tokens: 32768
+evidence_budget_tokens: 12000
+reserved_output_tokens: 4096
+reserved_instruction_tokens: 2048
+max_evidence_cases: 8

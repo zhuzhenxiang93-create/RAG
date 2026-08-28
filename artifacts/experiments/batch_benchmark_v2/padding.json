@@ -1,0 +1,23 @@
+{
+  "samples": 2000,
+  "batch_size": 4,
+  "max_length": 2048,
+  "static_max_length_padding": {
+    "effective_tokens": 677332,
+    "allocated_tokens": 4096000,
+    "padding_tokens": 3418668,
+    "padding_ratio": 0.8346357421875
+  },
+  "dynamic_random_batches": {
+    "effective_tokens": 677332,
+    "allocated_tokens": 1271136,
+    "padding_tokens": 593804,
+    "padding_ratio": 0.4671443496211263
+  },
+  "dynamic_length_grouped_batches": {
+    "effective_tokens": 677332,
+    "allocated_tokens": 686848,
+    "padding_tokens": 9516,
+    "padding_ratio": 0.013854593738352591
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "status": "completed",
+  "scope": "full_data_mining",
+  "experiment": "reranker_hard_negative_mining_v1",
+  "model": "LexicalBM25Index",
+  "start_time": "2026-08-21T05:18:22+08:00",
+  "end_time": "2026-08-21T05:24:25+08:00",
+  "elapsed_seconds": 363,
+  "source_split": "train_only",
+  "test_used": false,
+  "requested_queries": 5000,
+  "unique_queries_with_triplets": 4882,
+  "triplets": 14536,
+  "seed": 42,
+  "review_status": "unreviewed",
+  "data_sha256": {
+    "train": "8d57c9719083eb544d08a7c4aed60b6942a94c0c094e43a43b9dc95524db23b0",
+    "chunks": "359b88f232072e42799166c9ebdf5667f0d523166594baad06508d695a410a81",
+    "triplets": "69f30e6fb2ccb6dcead32b59a357fe853ead233324771697a9a369994f8007db8"
+  },
+  "log": "artifacts/experiments/reranker_hard_negative_mining_v1/logs/build.log"
+}

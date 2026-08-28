@@ -1,0 +1,59 @@
+{
+  "benchmark_scope": "worst-case 2048-token forward/backward/AdamW step",
+  "effective_batch_size": 32,
+  "runs": [
+    {
+      "status": "completed",
+      "batch_size": 2,
+      "gradient_accumulation_steps": 16,
+      "effective_batch_size": 32,
+      "sequence_length": 2048,
+      "effective_tokens": 4096,
+      "padding_tokens": 0,
+      "padding_ratio": 0.0,
+      "loss": 1.127851128578186,
+      "error": null,
+      "step_seconds": 3.816716432571411,
+      "peak_allocated_gib": 9.3049898147583,
+      "peak_reserved_gib": 11.619140625,
+      "gpu_name": "NVIDIA GeForce RTX 4090 D",
+      "microbatch_samples_per_second": 0.5240106346209622
+    },
+    {
+      "status": "completed",
+      "batch_size": 4,
+      "gradient_accumulation_steps": 8,
+      "effective_batch_size": 32,
+      "sequence_length": 2048,
+      "effective_tokens": 8192,
+      "padding_tokens": 0,
+      "padding_ratio": 0.0,
+      "loss": 1.1820186376571655,
+      "error": null,
+      "step_seconds": 7.000450134277344,
+      "peak_allocated_gib": 15.241958618164062,
+      "peak_reserved_gib": 19.486328125,
+      "gpu_name": "NVIDIA GeForce RTX 4090 D",
+      "microbatch_samples_per_second": 0.5713918281360517
+    },
+    {
+      "status": "oom",
+      "batch_size": 8,
+      "gradient_accumulation_steps": 4,
+      "effective_batch_size": 32,
+      "sequence_length": 2048,
+      "effective_tokens": 16384,
+      "padding_tokens": 0,
+      "padding_ratio": 0.0,
+      "loss": null,
+      "error": "CUDA out of memory. Tried to allocate 4.00 GiB. GPU 0 has a total capacity of 23.52 GiB of which 495.75 MiB is free. Including non-PyTorch memory, this process has 23.03 GiB memory in use. Of the allocated memory 17.87 GiB is allocated by PyTorch, and 4.74 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+      "step_seconds": 3.436898946762085,
+      "peak_allocated_gib": 21.715678691864014,
+      "peak_reserved_gib": 22.6171875,
+      "gpu_name": "NVIDIA GeForce RTX 4090 D"
+    }
+  ],
+  "recommended_micro_batch_size": 4,
+  "recommended_gradient_accumulation_steps": 8,
+  "selection_reason": "highest stable measured microbatch throughput with memory headroom"
+}

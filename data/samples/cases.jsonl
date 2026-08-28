@@ -1,0 +1,2 @@
+{"case_id":"demo-001","fact":"被告人进入商店后拿走柜台内手机一部，价值人民币三千元。","accusations":["盗窃"],"accusation_ids":[1],"relevant_articles":[264],"source_split":"sample"}
+{"case_id":"demo-002","fact":"被告人酒后驾驶机动车，经检测血液酒精含量为每百毫升一百六十毫克。","accusations":["危险驾驶"],"accusation_ids":[2],"relevant_articles":[133],"source_split":"sample"}

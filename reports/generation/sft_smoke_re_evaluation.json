@@ -1,0 +1,18 @@
+{
+  "rows": 20,
+  "json_parse_rate": 0.95,
+  "schema_pass_rate": 0.0,
+  "accusation_micro_f1": 0.0,
+  "citation_grounded_rate": 0.0,
+  "unsupported_citations": 0,
+  "simplified_schema_pass_rate": 0.0,
+  "simplified_accusation_micro_f1": 0.0,
+  "canonical_repair_schema_pass_rate": 0.95,
+  "canonical_repair_accusation_micro_f1": 0.9047619047619048,
+  "error_counts": {
+    "no_or_truncated_json": 1,
+    "invalid_json": 0,
+    "full_schema_invalid": 20,
+    "simplified_schema_invalid": 20
+  }
+}

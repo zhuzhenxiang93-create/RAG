@@ -1,0 +1,55 @@
+{
+  "status": "completed",
+  "scope": "pilot",
+  "qrels_status": "automatic_charge_overlap_proxy_unreviewed",
+  "embedding_model": "Qwen/Qwen3-Embedding-0.6B",
+  "embedding_license": "Apache-2.0",
+  "reranker_model": "Qwen/Qwen3-Reranker-0.6B",
+  "reranker_license": "Apache-2.0",
+  "chunks": 5000,
+  "queries": 100,
+  "build_seconds": 40.59390790015459,
+  "retrieval_mean_latency_seconds": 0.4675487874727696,
+  "reranker_seconds": 24.674059125594795,
+  "peak_gpu_memory_gib": 3.3163418769836426,
+  "metrics": {
+    "bm25": {
+      "relevance_definition": "proxy: any shared accusation label; not human qrels",
+      "recall@10": 0.006085715466728723,
+      "mrr@10": 0.852,
+      "ndcg@10": 0.7847782738561636,
+      "hit_rate@10": 1.0,
+      "queries": 100
+    },
+    "dense": {
+      "relevance_definition": "proxy: any shared accusation label; not human qrels",
+      "recall@10": 0.007582261863537876,
+      "mrr@10": 1.0,
+      "ndcg@10": 0.9862894103442789,
+      "hit_rate@10": 1.0,
+      "queries": 100
+    },
+    "hybrid": {
+      "relevance_definition": "proxy: any shared accusation label; not human qrels",
+      "recall@10": 0.006855721116987977,
+      "mrr@10": 0.97,
+      "ndcg@10": 0.9013048872629852,
+      "hit_rate@10": 1.0,
+      "queries": 100
+    },
+    "hybrid_plus_pretrained_reranker": {
+      "relevance_definition": "proxy: any shared accusation label; not human qrels",
+      "recall@10": 0.007243046821785762,
+      "mrr@10": 0.98,
+      "ndcg@10": 0.9467479964876793,
+      "hit_rate@10": 1.0,
+      "queries": 100
+    }
+  },
+  "elapsed_seconds": 712.7157700685784,
+  "limitations": [
+    "Pilot corpus is a deterministic prefix of the train-only case corpus.",
+    "Relevance is an automatic shared-accusation proxy, not human legal judgment.",
+    "The reranker is evaluated pretrained; domain hard-negative fine-tuning is not included in this run."
+  ]
+}

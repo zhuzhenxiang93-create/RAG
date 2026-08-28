@@ -1,1 +1,0 @@
-"""Metadata and artifact repositories."""

@@ -1,4 +1,0 @@
-Streaming Gateway Release
-
-The streaming gateway release requires TRACE_REQUESTS=true before starting the
-canary deployment. The release owner is the Runtime team.

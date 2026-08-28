@@ -1,0 +1,14 @@
+{
+  "sizes": {
+    "train": 120393,
+    "validation": 15032,
+    "test": 15097
+  },
+  "strategy": "normalized_dedup_then_iterative_multilabel_group_split",
+  "leakage": {
+    "exact_cross_split_overlap": 0,
+    "normalized_cross_split_overlap": 0,
+    "dedup_group_cross_split_overlap": 0,
+    "review_status": "unreviewed"
+  }
+}

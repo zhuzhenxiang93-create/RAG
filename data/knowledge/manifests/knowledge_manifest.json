@@ -1,0 +1,13 @@
+{
+  "source": "data/processed_v2/train.jsonl",
+  "source_prefix_sha256": "8d57c9719083eb544d08a7c4aed60b6942a94c0c094e43a43b9dc95524db23b0",
+  "cases": 120393,
+  "chunks": 128107,
+  "chunk_size_tokens": 1024,
+  "chunk_overlap_tokens": 128,
+  "split": "train_only",
+  "statutes": {
+    "rows": 452,
+    "source": "data/raw/statutes/criminal_law_official.txt"
+  }
+}

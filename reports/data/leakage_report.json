@@ -1,0 +1,5 @@
+{
+  "target_leakage_removed_rows": 72656,
+  "cross_split_normalized_overlap": 0,
+  "method": "rule-based charge-conclusion masking before split"
+}

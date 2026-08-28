@@ -1,0 +1,24 @@
+{
+  "status": "completed",
+  "scope": "pilot",
+  "model": "Qwen/Qwen3-Reranker-0.6B",
+  "model_license": "Apache-2.0",
+  "train_triplets": 1000,
+  "training_pairs": 2000,
+  "unresolved_triplets": 0,
+  "source_split": "train_only",
+  "test_used": false,
+  "review_status": "unreviewed",
+  "seed": 42,
+  "max_length": 1024,
+  "batch_size": 1,
+  "epochs": 1,
+  "learning_rate": 2e-05,
+  "elapsed_seconds": 390.22419238090515,
+  "peak_gpu_memory_gib": 5.630002021789551,
+  "data_sha256": {
+    "triplets": "69f30e6fb2ccb6dcead32b59a357fe853ead233324771697a9a369994f807db8",
+    "train_cases": "8d57c9719083eb544d08a7c4aed60b6942a94c0c094e43a43b9dc95524db23b0",
+    "case_chunks": "359b88f232072e42799166c9ebdf5667f0d523166594baad06508d695a410a81"
+  }
+}

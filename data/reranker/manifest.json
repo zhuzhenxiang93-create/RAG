@@ -1,0 +1,39 @@
+{
+  "dataset_version": "reranker-hard-negatives-v1",
+  "source_split": "train_only",
+  "review_status": "unreviewed",
+  "seed": 42,
+  "requested_queries": 5000,
+  "actual_queries": 5000,
+  "triplets": 14536,
+  "unique_queries": 4882,
+  "negative_type_distribution": {
+    "similar_fact_different_charge": 1977,
+    "different_amount_band": 2710,
+    "different_result": 910,
+    "same_charge_different_behavior": 4135,
+    "joint_vs_individual": 1741,
+    "different_intent": 2652,
+    "completed_vs_attempted": 264,
+    "intentional_vs_negligent": 147
+  },
+  "mining_statistics": {
+    "rows": 14536,
+    "negative_types": {
+      "similar_fact_different_charge": 1977,
+      "different_amount_band": 2710,
+      "different_result": 910,
+      "same_charge_different_behavior": 4135,
+      "joint_vs_individual": 1741,
+      "different_intent": 2652,
+      "completed_vs_attempted": 264,
+      "intentional_vs_negligent": 147
+    }
+  },
+  "test_rows_used": 0,
+  "input_sha256": {
+    "train": "8d57c9719083eb544d08a7c4aed60b6942a94c0c094e43a43b9dc95524db23b0",
+    "chunks": "359b88f232072e42799166c9ebdf5667f0d523166594baad06508d695a410a81"
+  },
+  "output_sha256": "69f30e6fb2ccb6dcead32b59a357fe853ead233324771697a9a369994f807db8"
+}

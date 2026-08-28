@@ -1,0 +1,13 @@
+{
+  "relevance_definition": "proxy: any shared accusation label; not human qrels",
+  "recall@10": 0.0007173817686406026,
+  "mrr@10": 0.46538492063492076,
+  "ndcg@10": 0.2846174127555095,
+  "hit_rate@10": 0.765,
+  "queries": 200,
+  "latency_seconds": {
+    "mean": 0.07785342660732568,
+    "p50": 0.04708933178335428,
+    "p95": 0.2430165959522128
+  }
+}

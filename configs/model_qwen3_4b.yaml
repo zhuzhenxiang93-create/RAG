@@ -1,0 +1,17 @@
+name_or_path: Qwen/Qwen3-4B
+trust_remote_code: true
+num_labels: 202
+problem_type: multi_label_classification
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_use_double_quant: true
+  bnb_4bit_compute_dtype: bfloat16
+lora:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules: all-linear
+  modules_to_save:
+    - score
+  bias: none

@@ -1,0 +1,17 @@
+model_name: Qwen/Qwen3-Reranker-0.6B
+model_license: Apache-2.0
+triplets: data/reranker/train_triplets.jsonl
+train_cases: data/processed_v2/train.jsonl
+case_chunks: data/knowledge/cases/case_chunks.jsonl
+output_dir: artifacts/experiments/qwen3_reranker_legal_hard_negative_pilot_offline
+scope: pilot
+max_triplets: 1000
+max_length: 1024
+batch_size: 1
+epochs: 1
+learning_rate: 0.00002
+warmup_ratio: 0.05
+seed: 42
+instruction: >-
+  Given an anonymized Chinese criminal case fact, judge whether the candidate
+  case is legally relevant in conduct, intent, result, accusation, and statute.

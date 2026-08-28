@@ -1,0 +1,85 @@
+{
+  "created_at_utc": "2026-07-28T03:43:23.782621+00:00",
+  "python": "3.11.15",
+  "seed": 42,
+  "input": {
+    "path": "data/train_data.jsonl",
+    "bytes": 237161699,
+    "sha256": "5d287aed962c8387f751c0fdd0599ea105469dfb0a0f80a89ce239373853e404",
+    "provenance_status": "legacy_local_file_unverified",
+    "source_url": null
+  },
+  "filtering": {
+    "min_text_chars": 20,
+    "max_boilerplate_chars": 120,
+    "raw_rows": 154592,
+    "low_information_rows": 607,
+    "short_text_rows": 55,
+    "duplicate_rows": 3333,
+    "conflicting_duplicate_rows": 0,
+    "clean_unique_cases": 150597
+  },
+  "sizes": {
+    "train": 120483,
+    "validation": 15081,
+    "test": 15033
+  },
+  "num_labels": 202,
+  "split_strategy": "iterative_multilabel_stratification",
+  "validation_ratio": 0.1,
+  "test_ratio": 0.1,
+  "exact_text_overlap": 0,
+  "statistics": {
+    "train": {
+      "rows": 120483,
+      "multi_label_rows": 26146,
+      "labels_present": 202,
+      "labels_missing": [],
+      "label_frequency_min": 13,
+      "label_frequency_max": 7703,
+      "fact_chars": {
+        "min": 20,
+        "p50": 352,
+        "p95": 1121,
+        "p99": 2625,
+        "max": 56181
+      }
+    },
+    "validation": {
+      "rows": 15081,
+      "multi_label_rows": 3241,
+      "labels_present": 202,
+      "labels_missing": [],
+      "label_frequency_min": 1,
+      "label_frequency_max": 963,
+      "fact_chars": {
+        "min": 34,
+        "p50": 351,
+        "p95": 1112,
+        "p99": 2500,
+        "max": 34640
+      }
+    },
+    "test": {
+      "rows": 15033,
+      "multi_label_rows": 3296,
+      "labels_present": 202,
+      "labels_missing": [],
+      "label_frequency_min": 1,
+      "label_frequency_max": 963,
+      "fact_chars": {
+        "min": 25,
+        "p50": 350,
+        "p95": 1143,
+        "p99": 2512,
+        "max": 39586
+      }
+    }
+  },
+  "output_sha256": {
+    "train.jsonl": "fcebf96a5d475ba687084e81dbde85a09ca40155c9c63475613f7d6d4e4fc42c",
+    "validation.jsonl": "8a08d453b89251cd88b7f9b58058743a90d26bfd6e6b57781d820f9c11b35741",
+    "test.jsonl": "b5def8eab7e73915810c3fda79024862dbf06c3d27c2884fe51b1e9d79c2364f",
+    "label_mapping.json": "a9739968916281c3c24d481efb1d0159eeaf8eaefdd4724e1b801be5b38774d1"
+  }
+}

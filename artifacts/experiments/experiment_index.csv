@@ -1,0 +1,9 @@
+﻿experiment,status,scope,model,train_rows,validation_rows,micro_f1,elapsed_seconds,peak_gpu_memory_gib,data_train_sha256,manifest
+bm25_sparse64_eval_v2,completed,unknown,,,200,,96.1985285114497,,,artifacts/experiments/bm25_sparse64_eval_v2/run_manifest.json
+qwen3_4b_generation_prompt_v2_smoke,completed,smoke,Qwen/Qwen3-4B,,,0.0,154.20716244447976,2.6737518310546875,,artifacts/experiments/qwen3_4b_generation_prompt_v2_smoke/run_manifest.json
+qwen3_4b_generation_sft_v2_smoke,completed,generation_sft_smoke,Qwen/Qwen3-4B,100,20,,58.33777952194214,9.461463928222656,8ece77ad0e5bd6c83fabdc4f560b100c6806d82d34a6c78f34e8bb79c13d306c,artifacts/experiments/qwen3_4b_generation_sft_v2_smoke/run_manifest.json
+qwen3_4b_generation_sft_v2_smoke_eval,completed,smoke,Qwen/Qwen3-4B,,,0.0,364.3830584352836,2.7994117736816406,,artifacts/experiments/qwen3_4b_generation_sft_v2_smoke_eval/run_manifest.json
+qwen3_4b_qlora_v2_full,running,full,Qwen/Qwen3-4B,120393,15032,,,,8d57c9719083eb544d08a7c4aed60b6942a94c0c094e43a43b9dc95524db23b0,artifacts/experiments/qwen3_4b_qlora_v2_full/run_manifest.json
+qwen3_4b_qlora_v2_smoke,completed,unknown,Qwen/Qwen3-4B,1000,100,0.007272727272727273,294.8870265483856,9.456719875335693,8d57c9719083eb544d08a7c4aed60b6942a94c0c094e43a43b9dc95524db23b0,artifacts/experiments/qwen3_4b_qlora_v2_smoke/run_manifest.json
+qwen3_retrieval_reranker_v2_pilot,completed,pilot,Qwen/Qwen3-Embedding-0.6B,,100,,712.7157700685784,3.3163418769836426,,artifacts/experiments/qwen3_retrieval_reranker_v2_pilot/run_manifest.json
+reranker_hard_negative_mining_v1,completed,full_data_mining,LexicalBM25Index,,,,363,,8d57c9719083eb544d08a7c4aed60b6942a94c0c094e43a43b9dc95524db23b0,artifacts/experiments/reranker_hard_negative_mining_v1/run_manifest.json
