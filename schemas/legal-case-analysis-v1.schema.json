@@ -1,0 +1,902 @@
+{
+  "$defs": {
+    "BinaryPrediction": {
+      "additionalProperties": false,
+      "properties": {
+        "predicted": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Predicted"
+        },
+        "probability": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Probability"
+        }
+      },
+      "title": "BinaryPrediction",
+      "type": "object"
+    },
+    "CitationValidation": {
+      "additionalProperties": false,
+      "properties": {
+        "valid": {
+          "title": "Valid",
+          "type": "boolean"
+        },
+        "invalid_case_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Invalid Case Ids",
+          "type": "array"
+        },
+        "invalid_articles": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Invalid Articles",
+          "type": "array"
+        }
+      },
+      "required": [
+        "valid"
+      ],
+      "title": "CitationValidation",
+      "type": "object"
+    },
+    "ClassificationSection": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "ok",
+            "provided",
+            "uncertain_below_threshold",
+            "degraded_no_classifier"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "labels": {
+          "items": {
+            "$ref": "#/$defs/LabelScorePayload"
+          },
+          "title": "Labels",
+          "type": "array"
+        },
+        "thresholds": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Thresholds",
+          "type": "object"
+        },
+        "used_fallback": {
+          "default": false,
+          "title": "Used Fallback",
+          "type": "boolean"
+        },
+        "max_probability": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Probability"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "title": "ClassificationSection",
+      "type": "object"
+    },
+    "EvidenceFirewall": {
+      "additionalProperties": false,
+      "properties": {
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "checks": {
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "title": "Checks",
+          "type": "object"
+        },
+        "blocking_reasons": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Blocking Reasons",
+          "type": "array"
+        },
+        "rejected_statutes": {
+          "items": {
+            "$ref": "#/$defs/RejectedStatute"
+          },
+          "title": "Rejected Statutes",
+          "type": "array"
+        },
+        "requires_manual_review": {
+          "title": "Requires Manual Review",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "passed",
+        "requires_manual_review"
+      ],
+      "title": "EvidenceFirewall",
+      "type": "object"
+    },
+    "EvidencePayload": {
+      "additionalProperties": false,
+      "properties": {
+        "chunk_id": {
+          "title": "Chunk Id",
+          "type": "string"
+        },
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "score": {
+          "title": "Score",
+          "type": "number"
+        },
+        "source_scores": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Source Scores",
+          "type": "object"
+        },
+        "accusations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Accusations",
+          "type": "array"
+        },
+        "relevant_articles": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Relevant Articles",
+          "type": "array"
+        },
+        "evidence_type": {
+          "enum": [
+            "case",
+            "statute"
+          ],
+          "title": "Evidence Type",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "promulgation_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Promulgation Date"
+        },
+        "effective_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Effective Date"
+        },
+        "expiry_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expiry Date"
+        },
+        "legal_status": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Legal Status"
+        },
+        "source_status": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Status"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "checksum": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Checksum"
+        },
+        "privacy_redaction_counts": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Privacy Redaction Counts",
+          "type": "object"
+        },
+        "presentation": {
+          "enum": [
+            "deidentified_summary",
+            "official_statute_text"
+          ],
+          "title": "Presentation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "chunk_id",
+        "case_id",
+        "text",
+        "score",
+        "evidence_type",
+        "presentation"
+      ],
+      "title": "EvidencePayload",
+      "type": "object"
+    },
+    "FinePrediction": {
+      "additionalProperties": false,
+      "properties": {
+        "imposed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Imposed"
+        },
+        "probability": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Probability"
+        },
+        "amount": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Amount"
+        },
+        "amount_range": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NumericRange"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "FinePrediction",
+      "type": "object"
+    },
+    "LabelScorePayload": {
+      "additionalProperties": false,
+      "properties": {
+        "label_id": {
+          "minimum": 0,
+          "title": "Label Id",
+          "type": "integer"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "probability": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Probability",
+          "type": "number"
+        }
+      },
+      "required": [
+        "label_id",
+        "label",
+        "probability"
+      ],
+      "title": "LabelScorePayload",
+      "type": "object"
+    },
+    "MonthsRange": {
+      "additionalProperties": false,
+      "properties": {
+        "min_months": {
+          "minimum": 0,
+          "title": "Min Months",
+          "type": "integer"
+        },
+        "max_months": {
+          "minimum": 0,
+          "title": "Max Months",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "min_months",
+        "max_months"
+      ],
+      "title": "MonthsRange",
+      "type": "object"
+    },
+    "NumericRange": {
+      "additionalProperties": false,
+      "properties": {
+        "min": {
+          "minimum": 0,
+          "title": "Min",
+          "type": "integer"
+        },
+        "max": {
+          "minimum": 0,
+          "title": "Max",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "min",
+        "max"
+      ],
+      "title": "NumericRange",
+      "type": "object"
+    },
+    "PredictedAccusation": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "probability": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Probability",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "probability"
+      ],
+      "title": "PredictedAccusation",
+      "type": "object"
+    },
+    "RejectedStatute": {
+      "additionalProperties": false,
+      "properties": {
+        "clause_id": {
+          "title": "Clause Id",
+          "type": "string"
+        },
+        "reasons": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Reasons",
+          "type": "array"
+        }
+      },
+      "required": [
+        "clause_id"
+      ],
+      "title": "RejectedStatute",
+      "type": "object"
+    },
+    "RetrievalSection": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "ok",
+            "no_match",
+            "degraded_no_index"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidencePayload"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "statute_status": {
+          "enum": [
+            "ok",
+            "degraded_no_statute_index",
+            "no_verified_applicable_statute"
+          ],
+          "title": "Statute Status",
+          "type": "string"
+        },
+        "statutes": {
+          "items": {
+            "$ref": "#/$defs/EvidencePayload"
+          },
+          "title": "Statutes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "statute_status"
+      ],
+      "title": "RetrievalSection",
+      "type": "object"
+    },
+    "SentencePrediction": {
+      "additionalProperties": false,
+      "properties": {
+        "sentence_type": {
+          "$ref": "#/$defs/SentenceType",
+          "default": "unknown"
+        },
+        "sentence_type_probability": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sentence Type Probability"
+        },
+        "imprisonment_months": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Imprisonment Months"
+        },
+        "imprisonment_range": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MonthsRange"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "probation": {
+          "$ref": "#/$defs/BinaryPrediction"
+        },
+        "fine": {
+          "$ref": "#/$defs/FinePrediction"
+        },
+        "death_penalty": {
+          "$ref": "#/$defs/BinaryPrediction"
+        },
+        "life_imprisonment": {
+          "$ref": "#/$defs/BinaryPrediction"
+        }
+      },
+      "title": "SentencePrediction",
+      "type": "object"
+    },
+    "SentenceType": {
+      "enum": [
+        "death",
+        "life",
+        "fixed_term",
+        "detention",
+        "control",
+        "exempt",
+        "unknown"
+      ],
+      "title": "SentenceType",
+      "type": "string"
+    },
+    "SentencingResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "default": "ok",
+          "title": "Status",
+          "type": "string"
+        },
+        "predicted_accusations": {
+          "items": {
+            "$ref": "#/$defs/PredictedAccusation"
+          },
+          "title": "Predicted Accusations",
+          "type": "array"
+        },
+        "sentence": {
+          "$ref": "#/$defs/SentencePrediction"
+        },
+        "key_sentencing_factors": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Key Sentencing Factors",
+          "type": "array"
+        },
+        "similar_cases": {
+          "items": {
+            "$ref": "#/$defs/SimilarCase"
+          },
+          "title": "Similar Cases",
+          "type": "array"
+        },
+        "confidence": {
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "requires_manual_review": {
+          "default": true,
+          "title": "Requires Manual Review",
+          "type": "boolean"
+        },
+        "missing_information": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing Information",
+          "type": "array"
+        },
+        "warnings": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        },
+        "disclaimer": {
+          "default": "该结果来自历史案件数据模型，仅用于研究和辅助分析，不构成法律意见。",
+          "title": "Disclaimer",
+          "type": "string"
+        }
+      },
+      "title": "SentencingResponse",
+      "type": "object"
+    },
+    "SimilarCase": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "similarity_score": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Similarity Score",
+          "type": "number"
+        },
+        "accusations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Accusations",
+          "type": "array"
+        },
+        "sentence_type": {
+          "$ref": "#/$defs/SentenceType"
+        },
+        "imprisonment_months": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Imprisonment Months"
+        },
+        "fine": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fine"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "similarity_score",
+        "sentence_type",
+        "summary"
+      ],
+      "title": "SimilarCase",
+      "type": "object"
+    },
+    "SimilarCaseCitation": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "reason"
+      ],
+      "title": "SimilarCaseCitation",
+      "type": "object"
+    },
+    "StructuredLegalAnalysis": {
+      "additionalProperties": false,
+      "properties": {
+        "predicted_accusations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Predicted Accusations",
+          "type": "array"
+        },
+        "relevant_articles": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Relevant Articles",
+          "type": "array"
+        },
+        "key_facts": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Key Facts",
+          "type": "array"
+        },
+        "missing_information": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing Information",
+          "type": "array"
+        },
+        "similar_cases": {
+          "items": {
+            "$ref": "#/$defs/SimilarCaseCitation"
+          },
+          "title": "Similar Cases",
+          "type": "array"
+        },
+        "analysis": {
+          "title": "Analysis",
+          "type": "string"
+        },
+        "confidence": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "requires_manual_review": {
+          "title": "Requires Manual Review",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "analysis",
+        "confidence",
+        "requires_manual_review"
+      ],
+      "title": "StructuredLegalAnalysis",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Versioned deterministic API response; no generative model is required.",
+  "properties": {
+    "schema_version": {
+      "const": "legal-case-analysis-v1",
+      "default": "legal-case-analysis-v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "classification": {
+      "$ref": "#/$defs/ClassificationSection"
+    },
+    "retrieval": {
+      "$ref": "#/$defs/RetrievalSection"
+    },
+    "analysis": {
+      "$ref": "#/$defs/StructuredLegalAnalysis"
+    },
+    "citation_validation": {
+      "$ref": "#/$defs/CitationValidation"
+    },
+    "evidence_firewall": {
+      "$ref": "#/$defs/EvidenceFirewall"
+    },
+    "sentencing": {
+      "$ref": "#/$defs/SentencingResponse"
+    },
+    "legal_as_of_date": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Legal As Of Date"
+    },
+    "initialization_warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Initialization Warnings",
+      "type": "array"
+    },
+    "timings": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Timings",
+      "type": "object"
+    },
+    "requires_manual_review": {
+      "default": true,
+      "title": "Requires Manual Review",
+      "type": "boolean"
+    },
+    "disclaimer": {
+      "title": "Disclaimer",
+      "type": "string"
+    }
+  },
+  "required": [
+    "classification",
+    "retrieval",
+    "analysis",
+    "citation_validation",
+    "evidence_firewall",
+    "sentencing",
+    "disclaimer"
+  ],
+  "title": "LegalCaseAnalysisResponse",
+  "type": "object"
+}

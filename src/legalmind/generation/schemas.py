@@ -2,15 +2,19 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
-class SimilarCaseCitation(BaseModel):
+class StrictGenerationModel(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
+class SimilarCaseCitation(StrictGenerationModel):
     case_id: str
     reason: str
 
 
-class StructuredLegalAnalysis(BaseModel):
+class StructuredLegalAnalysis(StrictGenerationModel):
     predicted_accusations: list[str] = Field(default_factory=list)
     relevant_articles: list[int] = Field(default_factory=list)
     key_facts: list[str] = Field(default_factory=list)
@@ -21,7 +25,7 @@ class StructuredLegalAnalysis(BaseModel):
     requires_manual_review: bool
 
 
-class SimplifiedLegalAnalysis(BaseModel):
+class SimplifiedLegalAnalysis(StrictGenerationModel):
     candidate_accusations: list[str] = Field(default_factory=list)
     key_facts: list[str] = Field(default_factory=list)
     confidence: Literal["high", "medium", "low"]

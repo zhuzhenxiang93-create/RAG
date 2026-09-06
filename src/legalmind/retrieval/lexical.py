@@ -62,6 +62,19 @@ class LexicalBM25Index:
             key=lambda item: item[2] * min(item[1], 3),
             reverse=True,
         )[:64]
+        # In very small charge partitions, every useful token can have IDF below
+        # the global-noise cutoff. Keep BM25 semantics by falling back to all
+        # indexed query terms instead of returning an empty candidate set.
+        if not informative_terms:
+            informative_terms = sorted(
+                (
+                    (token, frequency, self.idf[token])
+                    for token, frequency in query_terms.items()
+                    if token in self.idf
+                ),
+                key=lambda item: item[2] * min(item[1], 3),
+                reverse=True,
+            )[:64]
         for token, query_frequency, idf in informative_terms:
             for document_id, term_frequency in self.postings[token]:
                 length_normalization = self.k1 * (

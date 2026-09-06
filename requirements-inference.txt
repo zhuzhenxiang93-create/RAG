@@ -1,0 +1,8 @@
+# Verified on the school server with Python 3.10.21 and PyTorch 2.8.0+cu126.
+# Install the CUDA-compatible PyTorch build separately before this file.
+-e .
+transformers==4.57.1
+tokenizers==0.22.2
+peft==0.19.1
+accelerate==1.11.0
+safetensors==0.8.0

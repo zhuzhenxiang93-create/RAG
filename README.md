@@ -1,5 +1,11 @@
 # LegalMind-RAG：证据与法条约束的刑事案件智能分析系统
 
+> 结构化量刑研究基线见 [设计说明](docs/STRUCTURED_SENTENCING.md) 与
+> [API/CLI 使用说明](docs/SENTENCING_API.md)。它估计历史案件结果，不构成法律意见。
+
+> Data v3 当前只生成可复现的 `processed_v3_candidate`，尚不是正式 v3：继承的本地
+> 数据缺少可核验判决日期和完整来源链。详见 [Dataset v3](docs/DATASET_V3.md)。
+
 输入匿名化刑事案件事实，系统完成多标签罪名预测、法条与类案检索、候选重排、结构化分析、引用校验和不确定性控制。项目重点是可追溯的数据与实验链路，不提供法律意见。
 
 ## 为什么做这件事
@@ -159,7 +165,9 @@ PYTHONPATH=src python scripts/build_retrieval_eval.py --queries 200 --seed 42
 
 ## 结构化生成与 SFT
 
-生成输出字段固定为：`predicted_accusations`、`relevant_articles`、`key_facts`、`missing_information`、`similar_cases`、`analysis`、`confidence` 和 `requires_manual_review`。案例与法条引用必须来自本次检索上下文。
+默认主线不再依赖生成模型。分类、检索、法条时效过滤、结构化量刑和证据防火墙直接构造版本化的 `LegalCaseAnalysisResponse`，并通过 Pydantic 禁止未知字段、越界引用、证据类型混用、隐私标识和不一致的量刑语义。公共 JSON Schema 位于 `schemas/legal-case-analysis-v1.schema.json`，详见 `docs/PYDANTIC_PIPELINE.md`。
+
+历史 SFT 数据、配置、adapter 和报告继续保留用于复现实验，但默认 Pipeline 不加载它们。以下内容是历史实验记录，不代表当前默认运行路径。
 
 SFT v3.1 使用第一版简化 Schema：`candidate_accusations/key_facts/confidence/requires_manual_review`。训练数据 4,500 条，validation 550 条；其中 500/50 条把训练或验证案件确定性裁剪为信息不足输入，目标为空罪名、低置信度并触发人工复核。所有目标通过 Pydantic Schema，train/validation 来源案件重叠为 0，test 使用数为 0，全部保持 `unreviewed`。
 
@@ -175,16 +183,22 @@ PYTHONPATH=src python -m legalmind.training.train_generator \
 ## 不确定性与降级
 
 - 分类没有标签超过验证阈值时，状态为 `uncertain_below_threshold`，记录 `used_fallback` 和最大概率；
-- Fallback 候选只取前三个进入分析，并强制 `requires_manual_review=true`；
+- Fallback 只取概率最高的一个候选进入检索和量刑，保留模型真实概率，并强制 `requires_manual_review=true`；
 - 法条检索优先用候选罪名召回定义性条款，再补最多一条事实情节条款；
-- 没有分类器、索引、Reranker 或生成模型时，统一入口显式返回降级状态；
+- 没有分类器、索引或结构化量刑模型时，统一入口显式返回降级状态；
 - 最终 JSON 逐项校验案例 ID 和法条是否存在于检索结果。
 
 ```bash
-OMP_NUM_THREADS=8 python -m src.legalmind.pipeline.analyze_case \
+OMP_NUM_THREADS=8 PYTHONPATH=src python -m legalmind.pipeline.analyze_case \
   --fact-file examples/case.txt \
-  --config configs/pipeline/default.yaml
+  --config configs/pipeline/default.yaml \
+  --top-k 3
 ```
+
+面向用户的唯一命令入口是 `legalmind analyze`。未提供 `--accusation` 时自动预测罪名；
+提供时作为人工覆盖值。系统按罪名分区执行 BM25 初筛，再按罪名概率、涉案金额、
+量刑情节、年份和单/多罪名结构重排，只返回达到最低相关性门槛的最多 3 个去重案例。
+独立的 `predict-sentence` 用户入口已废弃；训练、建索引和评估命令仍作为管理命令保留。
 
 实际 Demo 的模型加载后阶段耗时约 0.85 秒；示例触发了 `uncertain_below_threshold`、引用校验通过并要求人工复核。该单条时间不代表服务压测吞吐量。
 
@@ -195,6 +209,7 @@ OMP_NUM_THREADS=8 python -m src.legalmind.pipeline.analyze_case \
 ## 测试、审计和实验
 
 ```bash
+python -m pip install -r requirements-inference.txt
 OMP_NUM_THREADS=8 PYTHONPATH=src pytest -q
 ruff check .
 ruff format --check .
@@ -219,3 +234,7 @@ OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/build_experiment_index.py
 ## 面试材料
 
 20–30 分钟项目讲解、深挖问题与中英文简历版本位于 `docs/interview/`。回答只引用当前代码和实际实验；待测内容均保持 `not_run` 或 `pending_manual_review`。
+
+竞争力架构说明见 `docs/COMPETITIVE_ARCHITECTURE.md`：包括指定日期有效法规检索、结构化量刑接入和确定性证据防火墙。
+
+罪名分类器的 checkpoint/数据/阈值身份审计、完整 validation 回归和 30 条合成回归集结果见 `docs/CLASSIFIER_REGRESSION.md`。

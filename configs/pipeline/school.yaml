@@ -1,6 +1,6 @@
 classifier:
   enabled: true
-  base_model: Qwen/Qwen3-4B
+  base_model: /data/zzhu126/models/Qwen3-4B
   adapter: artifacts/models/qwen3_4b_qlora_10k
   label_mapping: data/processed_v2/label_mapping.json
   thresholds: artifacts/results/classifier_10k_2k/thresholds.json

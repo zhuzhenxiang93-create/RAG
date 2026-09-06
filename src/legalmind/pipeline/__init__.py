@@ -1,3 +1,4 @@
+from legalmind.pipeline.contracts import LegalCaseAnalysisResponse
 from legalmind.pipeline.core import LegalMindPipeline
 
-__all__ = ["LegalMindPipeline"]
+__all__ = ["LegalCaseAnalysisResponse", "LegalMindPipeline"]
