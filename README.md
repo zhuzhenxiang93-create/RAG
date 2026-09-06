@@ -130,6 +130,16 @@ OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/train_qlora.py \
 
 先用 Qwen3 tokenizer 统计长度，再选择 2,048 token 训练上限。代码实现前截断、Head+Tail 和中文句界事实片段选择。句界策略只使用输入事实中的行为主体、方式、工具、金额、伤情、结果、主观意图、自首、累犯、赔偿和谅解线索，不读取测试标签。三种策略的 Full Micro-F1 消融仍为 `not_run`。
 
+学校服务器使用 A100 80GB，可直接采用 BF16 LoRA，避免依赖当前无法从外网安装的
+`bitsandbytes`。原 4-bit NF4 QLoRA 配置继续保留，二者共用训练入口；运行清单通过
+`adapter_method` 和 `quantization` 明确记录实际模式。学校全量配置为：
+
+```bash
+CUDA_VISIBLE_DEVICES=2 OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/train_qlora.py \
+  --model-config configs/model_qwen3_4b_school_lora.yaml \
+  --training-config configs/classification/qwen3_4b_lora_school_full.yaml
+```
+
 ## 检索、难负样本与 Reranker
 
 案例 Chunk 按句界切分为 1,024 token、128 token overlap，保留 `case_id/chunk_id/source_split/accusation/text_sha256`。测试与验证案例不会进入知识库。

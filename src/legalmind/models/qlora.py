@@ -11,26 +11,31 @@ def build_qlora_classifier(model_config: dict[str, Any]):
     quant = model_config.get("quantization", {})
     dtype_name = quant.get("bnb_4bit_compute_dtype", "bfloat16")
     compute_dtype = getattr(torch, dtype_name)
-    quantization_config = BitsAndBytesConfig(
-        load_in_4bit=bool(quant.get("load_in_4bit", True)),
-        bnb_4bit_quant_type=quant.get("bnb_4bit_quant_type", "nf4"),
-        bnb_4bit_use_double_quant=bool(quant.get("bnb_4bit_use_double_quant", True)),
-        bnb_4bit_compute_dtype=compute_dtype,
-    )
+    load_in_4bit = bool(quant.get("load_in_4bit", True))
+    loading_options: dict[str, Any] = {"dtype": compute_dtype}
+    if load_in_4bit:
+        loading_options["quantization_config"] = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type=quant.get("bnb_4bit_quant_type", "nf4"),
+            bnb_4bit_use_double_quant=bool(quant.get("bnb_4bit_use_double_quant", True)),
+            bnb_4bit_compute_dtype=compute_dtype,
+        )
     model = AutoModelForSequenceClassification.from_pretrained(
         model_config["name_or_path"],
         num_labels=int(model_config["num_labels"]),
         problem_type="multi_label_classification",
-        quantization_config=quantization_config,
         device_map="auto",
         trust_remote_code=bool(model_config.get("trust_remote_code", True)),
-        torch_dtype=compute_dtype,
+        **loading_options,
     )
     model.config.pad_token_id = model.config.pad_token_id or model.config.eos_token_id
-    model = prepare_model_for_kbit_training(
-        model,
-        use_gradient_checkpointing=True,
-    )
+    if load_in_4bit:
+        model = prepare_model_for_kbit_training(
+            model,
+            use_gradient_checkpointing=True,
+        )
+    else:
+        model.enable_input_require_grads()
     lora = model_config.get("lora", {})
     peft_config = LoraConfig(
         task_type=TaskType.SEQ_CLS,

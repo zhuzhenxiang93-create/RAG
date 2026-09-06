@@ -164,6 +164,12 @@ def main() -> None:
 
     run_manifest = {
         "model": model_config["name_or_path"],
+        "adapter_method": (
+            "qlora"
+            if bool(model_config.get("quantization", {}).get("load_in_4bit", True))
+            else "lora"
+        ),
+        "quantization": model_config.get("quantization", {}),
         "output_dir": str(output_dir),
         "smoke_samples": args.smoke_samples,
         "requested_train_samples": args.train_samples,
