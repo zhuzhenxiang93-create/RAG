@@ -3,7 +3,7 @@ from __future__ import annotations
 
 def summarize_token_lengths(
     lengths: list[int],
-    thresholds: tuple[int, ...] = (1024, 2048, 3072, 4096),
+    thresholds: tuple[int, ...] = (256, 512, 1024, 2048, 3072, 4096),
 ) -> dict:
     ordered = sorted(lengths)
     if not ordered:

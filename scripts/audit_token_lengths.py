@@ -13,6 +13,12 @@ def main() -> None:
     parser.add_argument("--dataset-dir", default="artifacts/datasets/cail2018_multilabel")
     parser.add_argument("--tokenizer", default="Qwen/Qwen3-4B")
     parser.add_argument("--batch-size", type=int, default=512)
+    parser.add_argument(
+        "--splits",
+        nargs="+",
+        choices=("train", "validation", "test"),
+        default=("train", "validation", "test"),
+    )
     parser.add_argument("--output", default="artifacts/results/token_length_audit.json")
     args = parser.parse_args()
 
@@ -21,7 +27,7 @@ def main() -> None:
     tokenizer = AutoTokenizer.from_pretrained(args.tokenizer, use_fast=True)
     report = {"tokenizer": args.tokenizer, "splits": {}}
     dataset_dir = Path(args.dataset_dir)
-    for split in ("train", "validation", "test"):
+    for split in args.splits:
         lengths: list[int] = []
         batch: list[str] = []
         for record in iter_jsonl(dataset_dir / f"{split}.jsonl"):
