@@ -1,0 +1,322 @@
+{
+  "test_rows": 15031,
+  "accusation_prediction": {
+    "status": "evaluated_separately_by_existing_charge_classifier",
+    "note": "This sentencing baseline conditions on optional accusations and does not replace charge evaluation."
+  },
+  "sentence_type": {
+    "rows": 15031,
+    "accuracy": 0.9379948107245027,
+    "macro_f1": 0.5445940353150582,
+    "labels": [
+      "death",
+      "exempt",
+      "fixed_term",
+      "life"
+    ],
+    "confusion_matrix": [
+      [
+        21,
+        0,
+        18,
+        16
+      ],
+      [
+        0,
+        232,
+        642,
+        0
+      ],
+      [
+        16,
+        143,
+        13806,
+        45
+      ],
+      [
+        7,
+        0,
+        45,
+        40
+      ]
+    ]
+  },
+  "imprisonment": {
+    "rows": 14010,
+    "mae": 23.62819414703783,
+    "median_ae": 9.0,
+    "bucket_interval_accuracy": 0.34039971448965023
+  },
+  "fine_imposed": {
+    "rows": 15031,
+    "precision": 0.7164040778498609,
+    "recall": 0.8305448963929394,
+    "f1": 0.769263576912141
+  },
+  "fine_positive_amount": {
+    "rows": 6515,
+    "mae": 33130.90345356869,
+    "median_ae": 5000.0,
+    "bucket_interval_accuracy": 0.3841903300076746
+  },
+  "missing_labels": {},
+  "major_accusation_groups": {
+    "走私、贩卖、运输、制造毒品": {
+      "imprisonment": {
+        "rows": 537,
+        "mae": 77.18435754189944,
+        "median_ae": 60.0
+      },
+      "fine_positive": {
+        "rows": 365,
+        "mae": 5627.052054794521,
+        "median_ae": 2000.0
+      }
+    },
+    "抢劫": {
+      "imprisonment": {
+        "rows": 443,
+        "mae": 42.410835214446955,
+        "median_ae": 30.0
+      },
+      "fine_positive": {
+        "rows": 304,
+        "mae": 7076.5723684210525,
+        "median_ae": 3000.0
+      }
+    },
+    "盗窃": {
+      "imprisonment": {
+        "rows": 319,
+        "mae": 23.830721003134798,
+        "median_ae": 7.0
+      },
+      "fine_positive": {
+        "rows": 266,
+        "mae": 6415.142857142857,
+        "median_ae": 2822.5
+      }
+    },
+    "受贿": {
+      "imprisonment": {
+        "rows": 299,
+        "mae": 40.03010033444816,
+        "median_ae": 33.0
+      },
+      "fine_positive": {
+        "rows": 68,
+        "mae": 91176.4705882353,
+        "median_ae": 22500.0
+      }
+    },
+    "故意伤害": {
+      "imprisonment": {
+        "rows": 315,
+        "mae": 35.61904761904762,
+        "median_ae": 16.0
+      },
+      "fine_positive": {
+        "rows": 32,
+        "mae": 12782.09375,
+        "median_ae": 6262.5
+      }
+    },
+    "寻衅滋事": {
+      "imprisonment": {
+        "rows": 262,
+        "mae": 26.400763358778626,
+        "median_ae": 13.0
+      },
+      "fine_positive": {
+        "rows": 41,
+        "mae": 11485.926829268292,
+        "median_ae": 4452.0
+      }
+    },
+    "危险驾驶": {
+      "imprisonment": {
+        "rows": 256,
+        "mae": 12.1796875,
+        "median_ae": 4.0
+      },
+      "fine_positive": {
+        "rows": 183,
+        "mae": 10687.027322404372,
+        "median_ae": 2000.0
+      }
+    },
+    "交通肇事": {
+      "imprisonment": {
+        "rows": 250,
+        "mae": 14.56,
+        "median_ae": 8.0
+      },
+      "fine_positive": {
+        "rows": 27,
+        "mae": 16868.40740740741,
+        "median_ae": 9000.0
+      }
+    },
+    "容留他人吸毒": {
+      "imprisonment": {
+        "rows": 243,
+        "mae": 74.35802469135803,
+        "median_ae": 54.0
+      },
+      "fine_positive": {
+        "rows": 198,
+        "mae": 8915.176767676769,
+        "median_ae": 3261.5
+      }
+    },
+    "伪造、变造、买卖国家机关公文、证件、印章": {
+      "imprisonment": {
+        "rows": 205,
+        "mae": 16.526829268292683,
+        "median_ae": 5.0
+      },
+      "fine_positive": {
+        "rows": 61,
+        "mae": 26789.590163934427,
+        "median_ae": 6900.0
+      }
+    },
+    "强奸": {
+      "imprisonment": {
+        "rows": 204,
+        "mae": 29.019607843137255,
+        "median_ae": 18.0
+      },
+      "fine_positive": {
+        "rows": 13,
+        "mae": 23437.076923076922,
+        "median_ae": 3000.0
+      }
+    },
+    "故意杀人": {
+      "imprisonment": {
+        "rows": 132,
+        "mae": 48.803030303030305,
+        "median_ae": 36.0
+      },
+      "fine_positive": {
+        "rows": 3,
+        "mae": 7000.0,
+        "median_ae": 8000.0
+      }
+    },
+    "信用卡诈骗": {
+      "imprisonment": {
+        "rows": 198,
+        "mae": 26.863636363636363,
+        "median_ae": 15.0
+      },
+      "fine_positive": {
+        "rows": 143,
+        "mae": 23547.734265734267,
+        "median_ae": 6776.0
+      }
+    },
+    "开设赌场": {
+      "imprisonment": {
+        "rows": 201,
+        "mae": 13.308457711442786,
+        "median_ae": 5.0
+      },
+      "fine_positive": {
+        "rows": 145,
+        "mae": 15730.924137931035,
+        "median_ae": 7327.0
+      }
+    },
+    "掩饰、隐瞒犯罪所得、犯罪所得收益": {
+      "imprisonment": {
+        "rows": 184,
+        "mae": 26.641304347826086,
+        "median_ae": 12.0
+      },
+      "fine_positive": {
+        "rows": 138,
+        "mae": 11277.123188405798,
+        "median_ae": 3111.0
+      }
+    },
+    "非法占用农用地": {
+      "imprisonment": {
+        "rows": 164,
+        "mae": 7.298780487804878,
+        "median_ae": 6.0
+      },
+      "fine_positive": {
+        "rows": 128,
+        "mae": 34078.421875,
+        "median_ae": 14499.5
+      }
+    },
+    "滥伐林木": {
+      "imprisonment": {
+        "rows": 182,
+        "mae": 9.82967032967033,
+        "median_ae": 6.0
+      },
+      "fine_positive": {
+        "rows": 143,
+        "mae": 10543.90909090909,
+        "median_ae": 3999.0
+      }
+    },
+    "引诱、容留、介绍卖淫": {
+      "imprisonment": {
+        "rows": 195,
+        "mae": 8.964102564102564,
+        "median_ae": 5.0
+      },
+      "fine_positive": {
+        "rows": 153,
+        "mae": 5440.196078431372,
+        "median_ae": 3000.0
+      }
+    },
+    "诈骗": {
+      "imprisonment": {
+        "rows": 181,
+        "mae": 41.0939226519337,
+        "median_ae": 27.0
+      },
+      "fine_positive": {
+        "rows": 118,
+        "mae": 29075.025423728814,
+        "median_ae": 15000.0
+      }
+    },
+    "虚开增值税专用发票、用于骗取出口退税、抵扣税款发票": {
+      "imprisonment": {
+        "rows": 189,
+        "mae": 19.98941798941799,
+        "median_ae": 16.0
+      },
+      "fine_positive": {
+        "rows": 156,
+        "mae": 68022.56410256411,
+        "median_ae": 30000.0
+      }
+    }
+  },
+  "model_manifest": {
+    "model_type": "hashing_char_ngram_hierarchical_sgd",
+    "random_state": 42,
+    "training_rows": 120468,
+    "sentence_type_rows": 120468,
+    "imprisonment_rows": 112164,
+    "fine_known_rows": 120468,
+    "fine_positive_rows": 52439,
+    "accusation_conditioning_dropout": 0.5,
+    "limitations": [
+      "legacy CAIL labels cannot distinguish fixed-term imprisonment, detention and control",
+      "probation is not trained because no reliable probation label is available"
+    ],
+    "dataset_file": "data/processed_v2_1_1/train.jsonl",
+    "training_seconds": 107.036,
+    "python": "3.10.21"
+  }
+}

@@ -54,7 +54,10 @@ def main() -> None:
     )
     base_name = model_config["name_or_path"]
     adapter = args.adapter or training["output_dir"]
-    tokenizer = AutoTokenizer.from_pretrained(adapter, trust_remote_code=True)
+    # The adapter may contain a tokenizer snapshot created by a different
+    # Transformers version. Tokenization belongs to the immutable base model;
+    # loading it from the base also matches training and online inference.
+    tokenizer = AutoTokenizer.from_pretrained(base_name, trust_remote_code=True)
     base = AutoModelForSequenceClassification.from_pretrained(
         base_name,
         num_labels=int(model_config["num_labels"]),

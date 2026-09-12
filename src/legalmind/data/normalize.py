@@ -81,6 +81,7 @@ def normalize_record(
             "death_penalty": nested_labels.get("death_penalty", False),
             "life_imprisonment": nested_labels.get("life_imprisonment", False),
             "imprisonment_months": nested_labels.get("imprisonment_months"),
+            "fine": nested_labels.get("fine"),
         }
     if penalty is None and legacy_output:
         penalty = {

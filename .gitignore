@@ -36,3 +36,17 @@ Qwen/
 
 # Backups are local recovery material and must not be committed.
 .codex_backups/
+
+# v3 runtime artifacts
+data/raw_external/
+data/interim_v3/
+data/processed_v3/
+data/processed_v3_candidate/
+artifacts/models/sentencing_baseline_v3/
+artifacts/indexes/sentencing_evidence_v3/
+
+# Grounded SFT datasets, review queues, and trained adapters stay local.
+data/sft_grounded_v1_smoke/
+data/sft_grounded_v1_pilot/
+artifacts/experiments/qwen3_4b_grounded_sft_*/
+reports/generation/*human_review_queue.tsv

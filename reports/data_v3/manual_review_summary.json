@@ -1,0 +1,13 @@
+{
+  "sample_rows": 200,
+  "seed": 42,
+  "status": "completed_passed",
+  "contains": "redacted facts in ignored interim file",
+  "reviewed_rows": 200,
+  "passed_rows": 200,
+  "failed_rows": 0,
+  "review_date": "2026-09-01",
+  "attestation_source": "user_confirmation_in_codex_task",
+  "attestation_scope": "The 200-row redacted review sample meets the project requirements.",
+  "reviewer_identity_stored": false
+}

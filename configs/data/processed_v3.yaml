@@ -1,0 +1,13 @@
+dataset_version: 3.0.0
+seed: 42
+input_dir: data/processed_v2_1_1
+output_dir: data/processed_v3_candidate
+reports_dir: reports/data_v3
+source: CAIL2018_legacy_local
+source_schema_version: processed_v2_1_1
+source_status: legacy_local_file_unverified
+split_strategy: preserve_v2_1_1_grouped_splits_no_dates
+known_limitations:
+  - Source archive provenance, original license scope, and judgment dates are unverified.
+  - Legacy term labels cannot distinguish fixed-term imprisonment, detention, and control.
+  - The candidate is not evidence of current sentencing practice.

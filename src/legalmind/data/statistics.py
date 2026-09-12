@@ -15,6 +15,11 @@ def split_statistics(records: list[dict], num_labels: int) -> dict:
         label_id for record in records for label_id in record.get("accusation_ids", [])
     )
     lengths = [int(record["length_metadata"]["characters"]) for record in records]
+    fine_values = [
+        int(record["labels"]["fine"])
+        for record in records
+        if record.get("labels", {}).get("fine") is not None
+    ]
     return {
         "rows": len(records),
         "single_label_rows": sum(len(row.get("accusation_ids", [])) == 1 for row in records),
@@ -30,6 +35,17 @@ def split_statistics(records: list[dict], num_labels: int) -> dict:
             "p95": percentile(lengths, 0.95),
             "p99": percentile(lengths, 0.99),
             "max": max(lengths, default=0),
+        },
+        "fine": {
+            "present_rows": len(fine_values),
+            "missing_rows": len(records) - len(fine_values),
+            "zero_rows": sum(value == 0 for value in fine_values),
+            "min": min(fine_values, default=0),
+            "p50": percentile(fine_values, 0.50),
+            "p90": percentile(fine_values, 0.90),
+            "p95": percentile(fine_values, 0.95),
+            "p99": percentile(fine_values, 0.99),
+            "max": max(fine_values, default=0),
         },
         "target_leakage_removed_rows": sum(
             bool(row["cleaning_metadata"]["target_leakage_removed"]) for row in records

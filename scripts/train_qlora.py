@@ -15,6 +15,11 @@ from legalmind.data.sampling import select_multilabel_subset, subset_report
 from legalmind.models.loading import configure_padding
 from legalmind.models.metrics import multilabel_metrics
 from legalmind.models.qlora import build_qlora_classifier, trainable_parameter_summary
+from legalmind.training.token_bucket import (
+    TokenBucketSampler,
+    load_token_lengths,
+    partial_batch_loss_scale,
+)
 
 
 def sha256_file(path: Path) -> str:
@@ -49,7 +54,6 @@ def main() -> None:
     started_at = time.time()
 
     from transformers import AutoTokenizer, EarlyStoppingCallback, Trainer, TrainingArguments
-    from transformers.trainer_pt_utils import LengthGroupedSampler
 
     tokenizer = AutoTokenizer.from_pretrained(
         model_config["name_or_path"],
@@ -97,20 +101,49 @@ def main() -> None:
         tokenizer, pad_to_multiple_of=int(training.get("pad_to_multiple_of", 8))
     )
     use_length_grouping = bool(training.get("group_by_length", True))
-    training_lengths = [
-        int(row.get("length_metadata", {}).get("characters", len(row["fact"])))
-        for row in train_records
+    token_length_cache = training.get("token_length_cache")
+    bucket_boundaries = [
+        int(value)
+        for value in training.get("length_bucket_boundaries", [256, 512, 1024, 2048])
     ]
+    full_train_selected = not args.smoke_samples and not args.train_samples
+    if use_length_grouping and token_length_cache and full_train_selected:
+        training_lengths = load_token_lengths(token_length_cache, len(train_records))
+    elif use_length_grouping:
+        training_lengths = [
+            len(tokenizer(row["fact"], add_special_tokens=True)["input_ids"])
+            for row in train_records
+        ]
+    else:
+        training_lengths = []
 
     class LegalLengthGroupedTrainer(Trainer):
+        def compute_loss(
+            self, model, inputs, return_outputs=False, num_items_in_batch=None
+        ):
+            actual_batch_size = int(inputs["labels"].shape[0])
+            result = super().compute_loss(
+                model,
+                inputs,
+                return_outputs=return_outputs,
+                num_items_in_batch=num_items_in_batch,
+            )
+            scale = partial_batch_loss_scale(
+                actual_batch_size, int(training["per_device_train_batch_size"])
+            )
+            if return_outputs:
+                loss, outputs = result
+                return loss * scale, outputs
+            return result * scale
+
         def _get_train_sampler(self, train_dataset=None):
             if not use_length_grouping:
                 return super()._get_train_sampler(train_dataset)
-            return LengthGroupedSampler(
-                batch_size=int(training["per_device_train_batch_size"]),
-                dataset=train_dataset,
+            return TokenBucketSampler(
                 lengths=training_lengths,
-                model_input_name="input_ids",
+                batch_size=int(training["per_device_train_batch_size"]),
+                boundaries=bucket_boundaries,
+                seed=seed,
             )
 
     def compute_metrics(output):
@@ -182,6 +215,9 @@ def main() -> None:
         "dynamic_padding": True,
         "pad_to_multiple_of": int(training.get("pad_to_multiple_of", 8)),
         "group_by_length": bool(training.get("group_by_length", True)),
+        "length_grouping_strategy": "token_bucket" if use_length_grouping else "disabled",
+        "length_bucket_boundaries": bucket_boundaries if use_length_grouping else [],
+        "token_length_cache": str(token_length_cache) if token_length_cache else None,
         "effective_tokens": collator.stats.effective_tokens,
         "padding_tokens": collator.stats.padding_tokens,
         "padding_ratio": collator.stats.padding_ratio,

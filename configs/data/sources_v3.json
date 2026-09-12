@@ -1,0 +1,68 @@
+{
+  "judge": {
+    "slug": "judge",
+    "official_name": "JuDGE",
+    "official_url": "https://github.com/oneal2000/JuDGE",
+    "paper_url": "https://dl.acm.org/doi/10.1145/3726302.3730165",
+    "download_url": "https://github.com/oneal2000/JuDGE/blob/main/data/all.json",
+    "license_location": "https://github.com/oneal2000/JuDGE/blob/main/LICENSE",
+    "license_summary": "MIT text covers software and associated documentation; dataset redistribution scope is not explicit.",
+    "recommended_use": "audit_only",
+    "limitations": ["Repository subset only; full 705.8 MB corpus not downloaded.", "No structured judgment_date field."]
+  },
+  "hrn": {
+    "slug": "hrn",
+    "official_name": "MultiLJP / HRN",
+    "official_url": "https://github.com/CURRENTF/HRN",
+    "paper_url": "https://aclanthology.org/2022.emnlp-main.534/",
+    "download_url": "https://github.com/CURRENTF/HRN/blob/main/dataset/dataset-v5/data_v5.03.zip",
+    "license_location": null,
+    "license_summary": "No license file found in the official repository.",
+    "recommended_use": "audit_only",
+    "limitations": ["Import blocked: license unclear and data blob download failed."]
+  },
+  "multijustice": {
+    "slug": "multijustice",
+    "official_name": "MultiJustice MPMCP",
+    "official_url": "https://github.com/lololo-xiao/MultiJustice-MPMCP",
+    "paper_url": "https://arxiv.org/abs/2507.06909",
+    "download_url": "https://github.com/lololo-xiao/MultiJustice-MPMCP/tree/main/data",
+    "license_location": "https://github.com/lololo-xiao/MultiJustice-MPMCP/blob/main/LICENSE",
+    "license_summary": "Repository states the project is MIT licensed.",
+    "recommended_use": "robustness_eval",
+    "limitations": ["Git LFS payload returned HTTP 403 in the server environment; only pointer metadata was available.", "No reliable fine field described."]
+  },
+  "lecardv2": {
+    "slug": "lecardv2",
+    "official_name": "LeCaRDv2",
+    "official_url": "https://github.com/THUIR/LeCaRDv2",
+    "paper_url": "https://arxiv.org/abs/2310.17609",
+    "download_url": "https://github.com/THUIR/LeCaRDv2",
+    "license_location": "https://github.com/THUIR/LeCaRDv2/blob/main/LICENSE",
+    "license_summary": "MIT; repository provides expert relevance qrels.",
+    "recommended_use": "retrieval_eval",
+    "limitations": ["Candidate corpus is a separate Google Drive download and was not fetched.", "Must never be used as sentencing supervision."]
+  },
+  "cail2018": {
+    "slug": "cail2018",
+    "official_name": "CAIL2018",
+    "official_url": "https://github.com/thunlp/CAIL",
+    "paper_url": "https://arxiv.org/abs/1807.02478",
+    "download_url": "https://cail.oss-cn-qingdao.aliyuncs.com/CAIL2018_ALL_DATA.zip",
+    "license_location": "https://github.com/thunlp/CAIL/blob/master/LICENSE",
+    "license_summary": "Repository is MIT; source archive provenance for the existing local derivative remains unverified.",
+    "recommended_use": "accusation_pretraining_or_legacy_benchmark",
+    "limitations": ["No judgment_date field.", "Legacy source cannot distinguish detention/control from fixed-term by month alone."]
+  },
+  "ml_ljp": {
+    "slug": "ml_ljp",
+    "official_name": "LAIC2021 / ML-LJP",
+    "official_url": "https://github.com/6666ev/ML-LJP",
+    "paper_url": "https://kunkuang.github.io/papers/SIGIR23-ML-LJP.pdf",
+    "download_url": "https://drive.google.com/file/d/1amsZ4aRiIIzkChw_g0LUGb12PXiEMe93/view",
+    "license_location": null,
+    "license_summary": "No license file or dataset use terms found in the official repository.",
+    "recommended_use": "research_only_after_permission",
+    "limitations": ["Import blocked by unclear license.", "No reliable fine field established."]
+  }
+}

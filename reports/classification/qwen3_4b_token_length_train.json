@@ -1,0 +1,40 @@
+{
+  "tokenizer": "/data/zzhu126/models/Qwen3-4B",
+  "splits": {
+    "train": {
+      "rows": 120468,
+      "min": 12,
+      "p50": 248,
+      "p90": 590,
+      "p95": 819,
+      "p99": 1904,
+      "max": 43754,
+      "thresholds": {
+        "256": {
+          "rows_exceeding": 57530,
+          "fraction_exceeding": 0.47755420526612874
+        },
+        "512": {
+          "rows_exceeding": 16231,
+          "fraction_exceeding": 0.13473287512036392
+        },
+        "1024": {
+          "rows_exceeding": 3808,
+          "fraction_exceeding": 0.03161005412225653
+        },
+        "2048": {
+          "rows_exceeding": 1059,
+          "fraction_exceeding": 0.008790716206793505
+        },
+        "3072": {
+          "rows_exceeding": 542,
+          "fraction_exceeding": 0.004499120098283361
+        },
+        "4096": {
+          "rows_exceeding": 333,
+          "fraction_exceeding": 0.002764219543779261
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+dataset_version: 2.1.0
+source_dataset: CAIL2018_legacy_local
+source_status: legacy_local_file_unverified
+raw_path: data/train_data.jsonl
+output_dir: data/processed_v2_1
+reports_dir: reports/data_v2_1
+seed: 42
+validation_ratio: 0.10
+test_ratio: 0.10
+min_text_chars: 20
+max_boilerplate_chars: 120
+near_duplicate_scan_rows: 20000
+simhash_hamming_threshold: 3
+max_near_duplicate_pairs: 5000

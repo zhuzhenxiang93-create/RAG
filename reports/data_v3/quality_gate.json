@@ -1,0 +1,36 @@
+{
+  "checks": {
+    "baseline_readable": true,
+    "conflicts_audited": true,
+    "core_tests_pass": true,
+    "exact_cross_split_zero": true,
+    "explicit_target_leakage_zero": true,
+    "fine_semantics_valid": true,
+    "license_risks_recorded": true,
+    "manifest_complete": true,
+    "normalized_cross_split_zero": true,
+    "privacy_processed": true,
+    "reproducible": true,
+    "schema_valid": true,
+    "sources_traceable": false
+  },
+  "details": {
+    "baseline_training_rows": 119510,
+    "compileall": "passed",
+    "pytest": "87 passed",
+    "manual_review": {
+      "status": "completed_passed",
+      "reviewed_rows": 200,
+      "passed_rows": 200,
+      "failed_rows": 0,
+      "review_date": "2026-09-01",
+      "attestation_source": "user_confirmation_in_codex_task"
+    },
+    "reason": "Inherited local CAIL derivative lacks a fully verified source archive, license chain and judgment dates.",
+    "ruff": "all checks passed"
+  },
+  "failed_gates": [
+    "sources_traceable"
+  ],
+  "passed": false
+}

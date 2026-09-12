@@ -39,3 +39,23 @@ def test_normalize_legacy_input_output_shape():
     )
     assert case.accusations == ["盗窃"]
     assert case.penalty["imprisonment_months"] == 8
+    assert case.penalty["fine"] == 1000
+
+
+def test_normalize_processed_shape_preserves_fine():
+    case = normalize_record(
+        {
+            "case_id": "processed-1",
+            "fact": "被告人盗窃手机。",
+            "labels": {
+                "accusations": ["盗窃"],
+                "imprisonment_months": 8,
+                "fine": 1000,
+                "life_imprisonment": False,
+                "death_penalty": False,
+            },
+            "accusation_ids": [99],
+        },
+        source_split="train",
+    )
+    assert case.penalty["fine"] == 1000

@@ -33,6 +33,15 @@ class CaseChunk(BaseModel):
     source_split: str | None = None
     parent_title: str | None = None
     text_sha256: str | None = None
+    evidence_type: str = "case"
+    source_url: str | None = None
+    promulgation_date: str | None = None
+    effective_date: str | None = None
+    expiry_date: str | None = None
+    legal_status: str | None = None
+    source_status: str | None = None
+    retrieved_at: str | None = None
+    checksum: str | None = None
 
 
 class StatuteChunk(BaseModel):
@@ -44,7 +53,12 @@ class StatuteChunk(BaseModel):
     text: str
     source_url: str
     version: str
+    promulgation_date: str | None = None
     effective_from: str | None = None
+    expiry_date: str | None = None
+    status: str = "unknown"
+    retrieved_at: str | None = None
+    checksum: str | None = None
     verified_at: str | None = None
     source_status: str = "unverified_source"
 
@@ -70,3 +84,12 @@ class SearchHit(BaseModel):
     source_scores: dict[str, float] = Field(default_factory=dict)
     accusations: list[str] = Field(default_factory=list)
     relevant_articles: list[int] = Field(default_factory=list)
+    evidence_type: str = "case"
+    source_url: str | None = None
+    promulgation_date: str | None = None
+    effective_date: str | None = None
+    expiry_date: str | None = None
+    legal_status: str | None = None
+    source_status: str | None = None
+    retrieved_at: str | None = None
+    checksum: str | None = None

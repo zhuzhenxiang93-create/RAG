@@ -8,6 +8,30 @@ _GENERIC_PATTERNS = (
     ("explicit_charge_conclusion", re.compile(r"(?:其行为|上述行为|被告人行为)?(?:已)?构成[^，。；]{1,30}?罪")),
     ("explicit_prosecution_charge", re.compile(r"应当?以[^，。；]{1,30}?罪(?:追究|定罪|处罚)")),
     ("explicit_charge_request", re.compile(r"以[^，。；]{1,30}?罪(?:提起公诉|判处)")),
+    (
+        "explicit_verdict_charge",
+        re.compile(r"(?:判决如下[:：]?\s*)?被告人[^，。；]{0,24}?犯[^，。；]{1,30}?罪"),
+    ),
+    (
+        "explicit_death_or_life_sentence",
+        re.compile(r"(?:决定执行|判处)[^，。；]{0,30}?(?:死刑|无期徒刑)"),
+    ),
+    (
+        "explicit_term_sentence",
+        re.compile(r"(?:决定执行|判处)[^，。；]{0,30}?(?:有期徒刑|拘役|管制)[^，。；]{0,24}"),
+    ),
+    (
+        "generic_sentence_after_verdict_verb",
+        re.compile(r"(?:判处|决定执行|处以)[^，。；]{1,100}"),
+    ),
+    (
+        "explicit_probation_sentence",
+        re.compile(r"(?:宣告)?缓刑[一二三四五六七八九十百零〇0-9年月个]+"),
+    ),
+    (
+        "explicit_fine_sentence",
+        re.compile(r"(?:并处罚金|判处罚金|处罚金|并处)[^，。；]{0,40}"),
+    ),
 )
 
 

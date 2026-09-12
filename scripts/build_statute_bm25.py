@@ -35,6 +35,15 @@ def main() -> None:
                     relevant_articles=[statute.article_number],
                     source_split="public_statute_unreviewed",
                     parent_title=statute.title,
+                    evidence_type="statute",
+                    source_url=statute.source_url,
+                    promulgation_date=statute.promulgation_date,
+                    effective_date=statute.effective_from,
+                    expiry_date=statute.expiry_date,
+                    legal_status=statute.status,
+                    source_status=statute.source_status,
+                    retrieved_at=statute.retrieved_at,
+                    checksum=statute.checksum,
                 )
             )
     index = LexicalBM25Index()

@@ -36,11 +36,36 @@ def write_jsonl(rows: list[dict], path: Path) -> None:
 def penalty_labels(value: dict | None) -> dict:
     value = value or {}
     months = value.get("imprisonment_months", value.get("imprisonment"))
+    fine = value.get("fine")
     return {
         "imprisonment_months": int(months) if str(months).lstrip("-").isdigit() else None,
+        "fine": int(fine) if str(fine).strip().isdigit() else None,
         "life_imprisonment": bool(value.get("life_imprisonment", False)),
         "death_penalty": bool(value.get("death_penalty", False)),
     }
+
+
+def penalty_signature(value: dict | None) -> tuple[int | None, bool, bool, int | None]:
+    labels = penalty_labels(value)
+    return (
+        labels["imprisonment_months"],
+        labels["life_imprisonment"],
+        labels["death_penalty"],
+        labels["fine"],
+    )
+
+
+def representative_penalty(values: list[dict | None]) -> tuple[dict, bool]:
+    """Select a deterministic modal outcome while making disagreements auditable."""
+    signatures = [penalty_signature(value) for value in values]
+    counts = Counter(signatures)
+    selected = sorted(counts, key=lambda item: (-counts[item], str(item)))[0]
+    return {
+        "imprisonment_months": selected[0],
+        "life_imprisonment": selected[1],
+        "death_penalty": selected[2],
+        "fine": selected[3],
+    }, len(counts) > 1
 
 
 def build(config_path: str | Path) -> dict:
@@ -80,13 +105,14 @@ def build(config_path: str | Path) -> dict:
             previous = merged[clean_hash]
             previous["accusations"].update(accusations)
             previous["articles"].update(case.relevant_articles)
+            previous["penalties"].append(case.penalty)
             continue
         merged[clean_hash] = {
             "source_index": source_index,
             "fact": leakage.text,
             "accusations": set(accusations),
             "articles": set(case.relevant_articles),
-            "penalty": case.penalty,
+            "penalties": [case.penalty],
             "leakage": leakage,
             "dedup_group_id": f"DG-{clean_hash[:20]}",
             "fact_sha256": clean_hash,
@@ -96,9 +122,33 @@ def build(config_path: str | Path) -> dict:
     labels = sorted(label_counts)
     mapping = {label: index for index, label in enumerate(labels)}
     records: list[dict] = []
+    penalty_conflicts: list[dict] = []
     for row in merged.values():
         accusations = sorted(row["accusations"])
-        penalties = penalty_labels(row["penalty"])
+        penalties, has_penalty_conflict = representative_penalty(row["penalties"])
+        if has_penalty_conflict:
+            counters["duplicate_penalty_conflict_groups"] += 1
+            penalty_conflicts.append(
+                {
+                    "dedup_group_id": row["dedup_group_id"],
+                    "fact_sha256": row["fact_sha256"],
+                    "observations": len(row["penalties"]),
+                    "outcomes": [
+                        {
+                            "imprisonment_months": signature[0],
+                            "life_imprisonment": signature[1],
+                            "death_penalty": signature[2],
+                            "fine": signature[3],
+                            "count": count,
+                        }
+                        for signature, count in sorted(
+                            Counter(penalty_signature(value) for value in row["penalties"]).items(),
+                            key=lambda item: str(item[0]),
+                        )
+                    ],
+                    "selected": penalties,
+                }
+            )
         record = ProcessedCase(
             case_id=f"CAIL-{row['fact_sha256'][:16]}",
             source_dataset=config.get("source_dataset", "CAIL2018_legacy_local"),
@@ -202,6 +252,9 @@ def build(config_path: str | Path) -> dict:
     (reports_dir / "duplicate_report.json").write_text(
         json.dumps(duplicate_report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
+    (reports_dir / "duplicate_penalty_conflicts.json").write_text(
+        json.dumps(penalty_conflicts, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     (reports_dir / "near_duplicate_candidates.json").write_text(
         json.dumps(near_pairs, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
@@ -224,7 +277,7 @@ def build(config_path: str | Path) -> dict:
                     value["target_leakage_removed_rows"] for value in statistics.values()
                 ),
                 "cross_split_normalized_overlap": 0,
-                "method": "rule-based charge-conclusion masking before split",
+                "method": "rule-based charge-and-sentencing-conclusion masking before split",
             },
             ensure_ascii=False,
             indent=2,

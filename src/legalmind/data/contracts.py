@@ -9,6 +9,7 @@ class LegalLabels(BaseModel):
     accusations: list[str] = Field(default_factory=list)
     relevant_articles: list[int] = Field(default_factory=list)
     imprisonment_months: int | None = None
+    fine: int | None = Field(default=None, ge=0)
     life_imprisonment: bool = False
     death_penalty: bool = False
 
