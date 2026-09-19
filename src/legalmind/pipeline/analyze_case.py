@@ -64,11 +64,27 @@ def build_pipeline(config: dict) -> LegalMindPipeline:
             evidence_index=sentencing_evidence,
             charge_predictor=classifier,
         )
+    grounded_analysis_service = None
+    generation_config = config.get("generation", {})
+    if generation_config.get("mode") == "openai_compatible_grounded":
+        try:
+            from legalmind.generation.analysis_service import GroundedAnalysisService
+            from legalmind.generation.openai_generator import OpenAICompatibleGenerator
+
+            grounded_analysis_service = GroundedAnalysisService(
+                OpenAICompatibleGenerator(generation_config),
+                max_repairs=int(generation_config.get("max_repairs", 1)),
+            )
+        except (ImportError, ValueError) as error:
+            initialization_warnings.append(
+                f"grounded_generation_disabled:{type(error).__name__}:{error}"
+            )
     return LegalMindPipeline(
         classifier=classifier,
         retriever=retriever,
         statute_retriever=statute_retriever,
         sentencing_service=sentencing_service,
+        grounded_analysis_service=grounded_analysis_service,
         initialization_warnings=initialization_warnings,
     )
 

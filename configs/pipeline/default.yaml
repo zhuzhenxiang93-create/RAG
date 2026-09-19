@@ -1,7 +1,7 @@
 classifier:
   enabled: true
-  base_model: Qwen/Qwen3-4B
-  adapter: artifacts/models/qwen3_4b_qlora_10k
+  base_model: /data/zzhu126/models/Qwen3-4B
+  adapter: artifacts/experiments/qwen3_4b_lora_school_full/checkpoint-7530
   label_mapping: data/processed_v2/label_mapping.json
   thresholds: artifacts/results/classifier_10k_2k/thresholds.json
   max_length: 2048
@@ -12,7 +12,15 @@ retrieval:
   statute_bm25_index: artifacts/indexes/statutes_bm25_temporal_v3
   top_k: 3
 generation:
-  mode: pydantic_deterministic
+  mode: openai_compatible_grounded
+  model: qwen-plus
+  base_url_env: GENERATION_BASE_URL
+  api_key_env: GENERATION_API_KEY
+  max_tokens: 2048
+  temperature: 0.0
+  top_p: 0.8
+  top_k: 20
+  max_repairs: 1
   require_citation_validation: true
 sentencing:
   enabled: true

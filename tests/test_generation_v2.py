@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from legalmind.generation.evidence_packet import build_evidence_packet
 from legalmind.generation.sft_data import build_sft_record
 from legalmind.generation.simple_sft import build_simple_sft_record
 from legalmind.generation.structured import (
@@ -69,6 +70,28 @@ def test_truncated_json_is_rejected() -> None:
         assert "truncated" in str(error)
     else:
         raise AssertionError("truncated JSON must fail")
+
+
+def test_evidence_packet_preserves_deidentified_case_penalty_context() -> None:
+    case = SearchHit(
+        chunk_id="case-1:c0",
+        case_id="case-1",
+        text="被告人张三，盗窃后退赔。",
+        score=0.9,
+        accusations=["盗窃"],
+        penalty={"sentence_type": "fixed_term", "imprisonment_months": 8},
+    )
+    packet = build_evidence_packet(
+        "匿名案件事实",
+        ["盗窃"],
+        [case],
+        [],
+        as_of_date="2025-01-01",
+        sentencing_baseline={"imprisonment_months": 9},
+    )
+    assert packet.evidence[0].penalty["imprisonment_months"] == 8
+    assert packet.evidence[0].accusations == ["盗窃"]
+    assert "张三" not in packet.evidence[0].summary
 
 
 def test_insufficient_information_target_abstains() -> None:

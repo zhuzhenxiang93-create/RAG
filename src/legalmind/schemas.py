@@ -30,6 +30,7 @@ class CaseChunk(BaseModel):
     end_char: int
     accusations: list[str] = Field(default_factory=list)
     relevant_articles: list[int] = Field(default_factory=list)
+    penalty: dict | None = None
     source_split: str | None = None
     parent_title: str | None = None
     text_sha256: str | None = None
@@ -84,6 +85,7 @@ class SearchHit(BaseModel):
     source_scores: dict[str, float] = Field(default_factory=dict)
     accusations: list[str] = Field(default_factory=list)
     relevant_articles: list[int] = Field(default_factory=list)
+    penalty: dict | None = None
     evidence_type: str = "case"
     source_url: str | None = None
     promulgation_date: str | None = None

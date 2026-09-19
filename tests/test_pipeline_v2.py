@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from legalmind.generation.contracts_v2 import GroundedClaimV1, LegalAnalysisV1
 from legalmind.pipeline.contracts import LegalCaseAnalysisResponse
 from legalmind.pipeline.core import LegalMindPipeline
 from legalmind.schemas import ClassificationResult, LabelScore, SearchHit
@@ -35,6 +36,34 @@ class FakeClassifier:
             ],
             used_fallback=self.fallback,
             max_probability=0.31,
+        )
+
+
+class FakeGroundedAnalysisService:
+    received = None
+
+    def analyze(self, packet):
+        self.received = packet
+        case_id = next(item.evidence_id for item in packet.evidence if item.evidence_type == "case")
+        statute_id = next(
+            item.evidence_id for item in packet.evidence if item.evidence_type == "statute"
+        )
+        return (
+            LegalAnalysisV1(
+                disposition="analyzed",
+                candidate_accusations=packet.predicted_accusations,
+                key_facts=[packet.fact],
+                legal_basis=[GroundedClaimV1(claim="适用检索法条", evidence_ids=[statute_id])],
+                analogous_cases=[
+                    GroundedClaimV1(claim="类案包含可比量刑标签", evidence_ids=[case_id])
+                ],
+                sentencing_assessment=[
+                    GroundedClaimV1(claim="结合类案与基线分析量刑", evidence_ids=[case_id])
+                ],
+                confidence="medium",
+                requires_manual_review=False,
+            ),
+            {"valid": True, "fallback_used": False, "attempts": 1},
         )
 
 
@@ -85,6 +114,45 @@ def test_pipeline_keeps_case_and_statute_evidence_separate() -> None:
     assert result.legal_as_of_date == "2025-01-01"
 
 
+def test_pipeline_sends_retrieval_and_sentencing_context_to_grounded_llm() -> None:
+    case = SearchHit(
+        chunk_id="CASE-1#0",
+        case_id="CASE-1",
+        text="盗窃后退赔并取得谅解",
+        score=0.9,
+        accusations=["盗窃"],
+        penalty={"sentence_type": "fixed_term", "imprisonment_months": 8, "fine": 1000},
+    )
+    statute = SearchHit(
+        chunk_id="LAW-264#0",
+        case_id="LAW-264",
+        text="刑法第二百六十四条",
+        score=1.0,
+        relevant_articles=[264],
+        evidence_type="statute",
+        source_url="https://www.gov.cn/law",
+        effective_date="2021-03-01",
+        legal_status="effective",
+        source_status="human_verified_official",
+    )
+    grounded = FakeGroundedAnalysisService()
+    result = LegalMindPipeline(
+        retriever=FakeRetriever([case]),
+        statute_retriever=FakeRetriever([statute]),
+        sentencing_service=FakeSentencingService(),
+        grounded_analysis_service=grounded,
+    ).analyze("盗窃财物后退赔。", accusations=["盗窃"], as_of_date="2025-01-01")
+
+    assert result.grounded_generation.status == "ok"
+    assert result.grounded_generation.analysis is not None
+    assert grounded.received.sentencing_baseline["status"] == "ok"
+    case_evidence = next(
+        item for item in grounded.received.evidence if item.evidence_type == "case"
+    )
+    assert case_evidence.penalty["imprisonment_months"] == 8
+    assert "grounded_generation_seconds" in result.timings
+
+
 def test_pipeline_has_explicit_cpu_degradation_status() -> None:
     result = LegalMindPipeline().analyze("仅用于测试的匿名案件事实。")
     assert result.classification.status == "degraded_no_classifier"
@@ -92,7 +160,7 @@ def test_pipeline_has_explicit_cpu_degradation_status() -> None:
     assert result.retrieval.statute_status == "degraded_no_statute_index"
     assert result.analysis.requires_manual_review is True
     assert result.requires_manual_review is True
-    assert "grounded_analysis" not in LegalCaseAnalysisResponse.model_fields
+    assert result.grounded_generation.status == "disabled"
 
 
 def test_pipeline_rejects_unverified_or_future_statute() -> None:
@@ -155,7 +223,7 @@ def test_pipeline_never_returns_direct_identifiers_in_case_evidence() -> None:
     assert returned.privacy_redaction_counts["identity_card"] == 1
 
 
-def test_fallback_probability_is_preserved_and_only_top_label_flows_downstream() -> None:
+def test_fallback_probabilities_are_preserved_for_multi_partition_retrieval() -> None:
     sentencing = FakeSentencingService()
     result = LegalMindPipeline(
         classifier=FakeClassifier(fallback=True),
@@ -163,7 +231,7 @@ def test_fallback_probability_is_preserved_and_only_top_label_flows_downstream()
         sentencing_service=sentencing,
     ).analyze("人工构造且长度足够的匿名盗窃案件事实，用于测试概率传递。")
     assert result.classification.labels[0].probability == 0.31
-    assert len(result.classification.labels) == 1
+    assert len(result.classification.labels) == 2
     assert sentencing.received is not None
     assert sentencing.received["predicted_accusations"][0].probability == 0.31
     assert result.retrieval.evidence[0].accusations == ["盗窃"]

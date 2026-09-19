@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from legalmind.data.privacy import scan_privacy
+from legalmind.generation.contracts_v2 import LegalAnalysisV1
 from legalmind.generation.schemas import StructuredLegalAnalysis
 from legalmind.sentencing.schemas import SentencingResponse
 
@@ -42,6 +43,7 @@ class EvidencePayload(StrictModel):
     source_scores: dict[str, float] = Field(default_factory=dict)
     accusations: list[str] = Field(default_factory=list)
     relevant_articles: list[int] = Field(default_factory=list)
+    penalty: dict[str, Any] | None = None
     evidence_type: Literal["case", "statute"]
     source_url: str | None = None
     promulgation_date: str | None = None
@@ -89,8 +91,22 @@ class EvidenceFirewall(StrictModel):
     requires_manual_review: bool
 
 
+class GroundedGenerationSection(StrictModel):
+    status: Literal["ok", "fallback", "disabled"] = "disabled"
+    analysis: LegalAnalysisV1 | None = None
+    validation: dict[str, Any] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def status_matches_analysis(self) -> GroundedGenerationSection:
+        if self.status == "disabled" and self.analysis is not None:
+            raise ValueError("disabled generation cannot contain an analysis")
+        if self.status != "disabled" and self.analysis is None:
+            raise ValueError("enabled generation requires an analysis")
+        return self
+
+
 class LegalCaseAnalysisResponse(StrictModel):
-    """Versioned deterministic API response; no generative model is required."""
+    """Versioned API response with optional evidence-grounded LLM analysis."""
 
     schema_version: Literal["legal-case-analysis-v1"] = "legal-case-analysis-v1"
     classification: ClassificationSection
@@ -99,6 +115,9 @@ class LegalCaseAnalysisResponse(StrictModel):
     citation_validation: CitationValidation
     evidence_firewall: EvidenceFirewall
     sentencing: SentencingResponse
+    grounded_generation: GroundedGenerationSection = Field(
+        default_factory=GroundedGenerationSection
+    )
     legal_as_of_date: str | None = None
     initialization_warnings: list[str] = Field(default_factory=list)
     timings: dict[str, float] = Field(default_factory=dict)
@@ -118,6 +137,24 @@ class LegalCaseAnalysisResponse(StrictModel):
         if not set(self.analysis.relevant_articles).issubset(statute_articles):
             raise ValueError("analysis cites an article outside statute evidence")
 
+        if self.grounded_generation.analysis is not None:
+            allowed_evidence_ids = {
+                item.chunk_id
+                for item in [*self.retrieval.evidence, *self.retrieval.statutes]
+            }
+            grounded = self.grounded_generation.analysis
+            cited_evidence_ids = {
+                evidence_id
+                for claim in [
+                    *grounded.legal_basis,
+                    *grounded.analogous_cases,
+                    *grounded.sentencing_assessment,
+                ]
+                for evidence_id in claim.evidence_ids
+            }
+            if not cited_evidence_ids.issubset(allowed_evidence_ids):
+                raise ValueError("grounded analysis cites evidence outside retrieval context")
+
         for item in self.retrieval.evidence:
             if sum(scan_privacy(item.text).values()):
                 raise ValueError(f"case evidence contains a direct identifier: {item.chunk_id}")
@@ -132,6 +169,11 @@ class LegalCaseAnalysisResponse(StrictModel):
             self.classification.status not in {"ok", "provided"}
             or self.analysis.requires_manual_review
             or self.sentencing.requires_manual_review
+            or (
+                self.grounded_generation.analysis is not None
+                and self.grounded_generation.analysis.requires_manual_review
+            )
+            or self.grounded_generation.status == "fallback"
             or self.evidence_firewall.requires_manual_review
             or not self.citation_validation.valid
         )

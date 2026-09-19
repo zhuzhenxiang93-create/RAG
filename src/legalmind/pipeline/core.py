@@ -3,6 +3,7 @@ from __future__ import annotations
 import time
 from typing import Any
 
+from legalmind.generation.evidence_packet import build_evidence_packet
 from legalmind.generation.structured import (
     deterministic_grounded_analysis,
     validate_citations,
@@ -18,6 +19,15 @@ def _canonical_accusation(value: str) -> str:
     return value.strip().removesuffix("罪")
 
 
+def select_retrieval_label_scores(
+    scores: list[LabelScore], used_fallback: bool, max_fallback_candidates: int = 3
+) -> list[LabelScore]:
+    """Keep calibrated labels, but broaden uncertain fallback retrieval to Top-K."""
+    if not used_fallback:
+        return list(scores)
+    return list(scores[: max(1, max_fallback_candidates)])
+
+
 class LegalMindPipeline:
     def __init__(
         self,
@@ -25,12 +35,14 @@ class LegalMindPipeline:
         retriever: Any | None = None,
         statute_retriever: Any | None = None,
         sentencing_service: Any | None = None,
+        grounded_analysis_service: Any | None = None,
         initialization_warnings: list[str] | None = None,
     ):
         self.classifier = classifier
         self.retriever = retriever
         self.statute_retriever = statute_retriever
         self.sentencing_service = sentencing_service
+        self.grounded_analysis_service = grounded_analysis_service
         self.initialization_warnings = initialization_warnings or []
 
     def _retrieve_statutes(
@@ -98,7 +110,7 @@ class LegalMindPipeline:
             result = self.classifier.predict(fact)
             status = "uncertain_below_threshold" if result.used_fallback else "ok"
             classification = {"status": status, **result.model_dump()}
-            label_scores = list(result.labels[:1] if result.used_fallback else result.labels)
+            label_scores = select_retrieval_label_scores(result.labels, result.used_fallback)
             labels = [row.label for row in label_scores]
             classification["labels"] = [item.model_dump() for item in label_scores]
             timings["classification_seconds"] = time.perf_counter() - phase
@@ -160,6 +172,29 @@ class LegalMindPipeline:
                 }
             )
             timings["sentencing_seconds"] = time.perf_counter() - phase
+        grounded_generation: dict[str, Any] = {
+            "status": "disabled",
+            "analysis": None,
+            "validation": {},
+        }
+        if self.grounded_analysis_service is not None:
+            phase = time.perf_counter()
+            packet = build_evidence_packet(
+                fact,
+                labels,
+                hits,
+                statute_hits,
+                as_of_date=as_of_date,
+                sentencing_baseline=sentencing.model_dump(mode="json"),
+            )
+            grounded_analysis, generation_report = self.grounded_analysis_service.analyze(packet)
+            fallback_used = bool(generation_report.get("fallback_used"))
+            grounded_generation = {
+                "status": "fallback" if fallback_used else "ok",
+                "analysis": grounded_analysis.model_dump(mode="json"),
+                "validation": generation_report,
+            }
+            timings["grounded_generation_seconds"] = time.perf_counter() - phase
         timings["total_seconds"] = time.perf_counter() - started
         requires_manual_review = (
             classification["status"] not in {"ok", "provided"}
@@ -167,6 +202,11 @@ class LegalMindPipeline:
             or sentencing.requires_manual_review
             or firewall["requires_manual_review"]
             or not citation_check["valid"]
+            or grounded_generation["status"] == "fallback"
+            or (
+                grounded_generation["analysis"] is not None
+                and grounded_generation["analysis"]["requires_manual_review"]
+            )
         )
         return LegalCaseAnalysisResponse.model_validate(
             {
@@ -182,6 +222,7 @@ class LegalMindPipeline:
                 "citation_validation": citation_check,
                 "evidence_firewall": firewall,
                 "sentencing": sentencing,
+                "grounded_generation": grounded_generation,
                 "legal_as_of_date": as_of_date,
                 "initialization_warnings": self.initialization_warnings,
                 "timings": timings,

@@ -16,6 +16,9 @@ class EvidenceItemV1(BaseModel):
     evidence_type: EvidenceType
     title: str = Field(min_length=1)
     summary: str = Field(min_length=1)
+    accusations: list[str] = Field(default_factory=list)
+    relevant_articles: list[int] = Field(default_factory=list)
+    penalty: dict[str, object] | None = None
     source_url: str | None = None
     source_status: str | None = None
     effective_date: str | None = None

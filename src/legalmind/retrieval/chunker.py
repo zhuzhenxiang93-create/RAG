@@ -85,6 +85,7 @@ class ChineseCaseChunker:
             end_char=end,
             accusations=case.accusations,
             relevant_articles=case.relevant_articles,
+            penalty=case.penalty,
             source_split=case.source_split,
             parent_title="案件事实",
             text_sha256=hashlib.sha256(case.fact[start:end].encode("utf-8")).hexdigest(),
