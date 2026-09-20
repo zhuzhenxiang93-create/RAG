@@ -86,11 +86,11 @@ export OMP_NUM_THREADS=8
 
 法条文本来自国家统计局公开的《中华人民共和国刑法》页面：<https://www.stats.gov.cn/gk/tjfg/xgfxfg/202503/t20250311_1958931.html>。下载时间、原始 HTML/文本 SHA256、页面说明和解析状态记录在 `data/raw/statutes/manifest.json`。页面标注包含刑法修正案（十二），项目仍将自动解析结果标为 `unreviewed`；实际法律使用前必须核验时效和正文。
 
-## 分类与 QLoRA
+## 分类与 LoRA
 
 任务保留一案多罪，使用 multi-hot 标签与 `BCEWithLogitsLoss`。正式分类主指标统一为 Micro-F1；本项目中存在多标签样本，因此它不等同于简单 Accuracy。
 
-QLoRA 配置：Qwen3-4B、4-bit NF4、double quant、BF16、LoRA `r=16/alpha=32/dropout=0.05`、`all-linear`、gradient checkpointing、动态 Padding、`pad_to_multiple_of=8` 和长度分桶。LoRA 训练低秩增量，4-bit 基座保持冻结，Adapter 独立保存。
+当前学校主线使用 **Qwen3-4B BF16 LoRA**：基座以 BF16 加载且冻结，仅训练 LoRA 低秩增量和 202 类 `score` 分类头；配置为 `r=16/alpha=32/dropout=0.05`、`all-linear`、gradient checkpointing、动态 Padding、`pad_to_multiple_of=8` 和长度分桶。历史 4-bit NF4 QLoRA 配置继续保留用于复现实验，但不再代表当前主模型。
 
 4090D 同一 2,048 token 压力条件下的实际 Batch Benchmark：
 
@@ -114,13 +114,15 @@ OMP_NUM_THREADS=8 PYTHONPATH=src python -m legalmind.baselines \
 OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/train_qlora.py \
   --training-config configs/classification/qwen3_4b_qlora_smoke.yaml
 
-# v2 Full，输出目录独立
-OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/train_qlora.py \
-  --training-config configs/classification/qwen3_4b_qlora_full.yaml
+# 学校 BF16 LoRA 主线
+OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/train_lora.py \
+  --model-config configs/model_qwen3_4b_school_lora.yaml \
+  --training-config configs/classification/qwen3_4b_lora_school_full.yaml
 
 # 中断后自动从最新 checkpoint 恢复
-OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/train_qlora.py \
-  --training-config configs/classification/qwen3_4b_qlora_full.yaml \
+OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/train_lora.py \
+  --model-config configs/model_qwen3_4b_school_lora.yaml \
+  --training-config configs/classification/qwen3_4b_lora_school_full.yaml \
   --resume-from-checkpoint
 ```
 
@@ -131,11 +133,11 @@ OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/train_qlora.py \
 先用 Qwen3 tokenizer 统计长度，再选择 2,048 token 训练上限。代码实现前截断、Head+Tail 和中文句界事实片段选择。句界策略只使用输入事实中的行为主体、方式、工具、金额、伤情、结果、主观意图、自首、累犯、赔偿和谅解线索，不读取测试标签。三种策略的 Full Micro-F1 消融仍为 `not_run`。
 
 学校服务器使用 A100 80GB，可直接采用 BF16 LoRA，避免依赖当前无法从外网安装的
-`bitsandbytes`。原 4-bit NF4 QLoRA 配置继续保留，二者共用训练入口；运行清单通过
+`bitsandbytes`。原 4-bit NF4 QLoRA 配置继续保留，仅用于历史复现。LoRA/QLoRA 共用底层 PEFT 构建逻辑，但学校训练从 `scripts/train_lora.py` 进入；运行清单通过
 `adapter_method` 和 `quantization` 明确记录实际模式。学校全量配置为：
 
 ```bash
-CUDA_VISIBLE_DEVICES=2 OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/train_qlora.py \
+CUDA_VISIBLE_DEVICES=2 OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/train_lora.py \
   --model-config configs/model_qwen3_4b_school_lora.yaml \
   --training-config configs/classification/qwen3_4b_lora_school_full.yaml
 ```
@@ -232,6 +234,10 @@ OMP_NUM_THREADS=8 PYTHONPATH=src python scripts/build_experiment_index.py
 
 ## 已知局限
 
+- GitHub 当前没有提交学校 BF16 LoRA 的完整训练/独立测试产物；最终分类指标必须以修正版 BF16 评估重新生成的报告为准；
+- 当前分类长文本仍使用 2,048-token Head+Tail；overlap/sliding-window 案件级聚合尚未实现；
+- 近重复 SimHash 当前用于审计候选，不参与 split 分组，因此只能保证 exact/normalized/dedup-group 跨集合隔离；
+- 默认在线类案路由实际是“罪名分区 BM25 + 结构化重排”；Dense/RRF/Qwen Reranker 已有独立实验实现，但尚未接入默认 `legalmind analyze` 主链路；
 - 当前 CAIL 派生文件的下载来源和许可尚未在服务器上恢复，且缺少法条字段；
 - 自动罪名泄漏遮蔽命中比例较高，需要法律专业人员抽样审核；
 - 202 类具有明显长尾，Micro-F1 会被高频类别主导；
