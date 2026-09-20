@@ -1,9 +1,9 @@
 classifier:
   enabled: true
   base_model: /data/zzhu126/models/Qwen3-4B
-  adapter: artifacts/experiments/qwen3_4b_lora_school_full/checkpoint-7530
-  label_mapping: data/processed_v2/label_mapping.json
-  thresholds: artifacts/results/classifier_10k_2k/thresholds.json
+  adapter: artifacts/experiments/qwen3_4b_lora_school_full
+  label_mapping: data/processed_v2_1_1/label_mapping.json
+  thresholds: artifacts/results/qwen3_4b_lora_school_full_eval_bf16/thresholds.json
   max_length: 2048
   truncation_strategy: head_tail
 retrieval:
