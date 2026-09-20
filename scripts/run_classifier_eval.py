@@ -12,8 +12,8 @@ from legalmind.data.dataset import MultiLabelCaseDataset, MultiLabelCollator
 from legalmind.data.labels import load_label_mapping
 from legalmind.data.loader import iter_jsonl
 from legalmind.data.sampling import select_multilabel_subset
-from legalmind.models.loading import configure_padding
 from legalmind.models.metrics import multilabel_report, sigmoid, tune_thresholds
+from legalmind.models.peft_classifier import adapter_method, load_adapter_classifier
 
 
 def predict(model, dataset, collator, batch_size: int) -> tuple[np.ndarray, np.ndarray]:
@@ -42,33 +42,12 @@ def main() -> None:
     model_config = load_yaml(args.model_config)
     training = load_yaml(args.training_config)
 
-    from peft import PeftModel
-    from transformers import AutoModelForSequenceClassification, AutoTokenizer, BitsAndBytesConfig
+    from transformers import AutoTokenizer
 
-    dtype = getattr(torch, model_config["quantization"].get("bnb_4bit_compute_dtype", "bfloat16"))
-    quantization = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type=model_config["quantization"].get("bnb_4bit_quant_type", "nf4"),
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_compute_dtype=dtype,
-    )
     base_name = model_config["name_or_path"]
     adapter = args.adapter or training["output_dir"]
-    # The adapter may contain a tokenizer snapshot created by a different
-    # Transformers version. Tokenization belongs to the immutable base model;
-    # loading it from the base also matches training and online inference.
     tokenizer = AutoTokenizer.from_pretrained(base_name, trust_remote_code=True)
-    base = AutoModelForSequenceClassification.from_pretrained(
-        base_name,
-        num_labels=int(model_config["num_labels"]),
-        problem_type="multi_label_classification",
-        quantization_config=quantization,
-        device_map="auto",
-        torch_dtype=dtype,
-        trust_remote_code=True,
-    )
-    configure_padding(tokenizer, base)
-    model = PeftModel.from_pretrained(base, adapter)
+    model = load_adapter_classifier(model_config, adapter)
     dataset_dir = Path(training["dataset_dir"])
     datasets = {}
     sampling = {}
@@ -85,6 +64,7 @@ def main() -> None:
             tokenizer,
             num_labels,
             int(training["max_length"]),
+            truncation_strategy=training.get("truncation_strategy", "head_tail"),
         )
     collator = MultiLabelCollator(tokenizer)
     validation_logits, validation_labels = predict(
@@ -103,6 +83,10 @@ def main() -> None:
     )
     metrics = report["summary"]
     report["sampling"] = sampling
+    report["adapter_method"] = adapter_method(model_config)
+    report["model_config"] = args.model_config
+    report["training_config"] = args.training_config
+    report["adapter"] = adapter
     output = Path(args.output_dir)
     output.mkdir(parents=True, exist_ok=True)
     for name, value in {
