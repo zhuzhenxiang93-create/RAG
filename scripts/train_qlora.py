@@ -14,7 +14,7 @@ from legalmind.data.loader import iter_jsonl
 from legalmind.data.sampling import select_multilabel_subset, subset_report
 from legalmind.models.loading import configure_padding
 from legalmind.models.metrics import multilabel_metrics
-from legalmind.models.qlora import build_qlora_classifier, trainable_parameter_summary
+from legalmind.models.peft_classifier import (\n    adapter_method,\n    build_adapter_classifier,\n    trainable_parameter_summary,\n)
 from legalmind.training.token_bucket import (
     TokenBucketSampler,
     load_token_lengths,
@@ -61,7 +61,7 @@ def main() -> None:
         use_fast=True,
     )
     tokenizer.padding_side = "right"
-    model = build_qlora_classifier(model_config)
+    model = build_adapter_classifier(model_config)
     configure_padding(tokenizer, model)
     print(json.dumps(trainable_parameter_summary(model), indent=2))
 
