@@ -14,6 +14,6 @@ cd /data/zzhu126/LegalMind-RAG
 export PYTHONUNBUFFERED=1
 
 /data/zzhu126/environments/legalmind-rag-gpu/bin/python \
-  scripts/train_qlora.py \
+  scripts/train_lora.py \
   --model-config configs/model_qwen3_4b_school_lora.yaml \
   --training-config configs/classification/qwen3_4b_lora_school_full.yaml
