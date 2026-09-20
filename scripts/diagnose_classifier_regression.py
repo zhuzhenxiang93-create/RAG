@@ -16,8 +16,8 @@ from legalmind.data.dataset import MultiLabelCaseDataset, MultiLabelCollator
 from legalmind.data.labels import load_label_mapping
 from legalmind.data.loader import iter_jsonl
 from legalmind.data.sampling import select_multilabel_subset
-from legalmind.models.loading import configure_padding
 from legalmind.models.metrics import binarize, multilabel_report, sigmoid, tune_thresholds
+from legalmind.models.peft_classifier import load_adapter_classifier
 
 
 def sha256(path: Path) -> str:
@@ -217,29 +217,12 @@ def regression_report(
 
 
 def load_model(model_config: dict, adapter: str):
-    from peft import PeftModel
-    from transformers import AutoModelForSequenceClassification, AutoTokenizer, BitsAndBytesConfig
+    from transformers import AutoTokenizer
 
-    dtype = getattr(torch, model_config["quantization"].get("bnb_4bit_compute_dtype", "bfloat16"))
-    quantization = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type=model_config["quantization"].get("bnb_4bit_quant_type", "nf4"),
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_compute_dtype=dtype,
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_config["name_or_path"], trust_remote_code=True
     )
-    base_name = model_config["name_or_path"]
-    tokenizer = AutoTokenizer.from_pretrained(base_name, trust_remote_code=True)
-    base = AutoModelForSequenceClassification.from_pretrained(
-        base_name,
-        num_labels=int(model_config["num_labels"]),
-        problem_type="multi_label_classification",
-        quantization_config=quantization,
-        device_map="auto",
-        torch_dtype=dtype,
-        trust_remote_code=True,
-    )
-    configure_padding(tokenizer, base)
-    return tokenizer, PeftModel.from_pretrained(base, adapter).eval()
+    return tokenizer, load_adapter_classifier(model_config, adapter)
 
 
 def main() -> None:
