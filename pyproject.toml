@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "legalmind-rag"
 version = "0.1.0"
-description = "QLoRA multi-label charge classification and traceable legal case retrieval"
+description = "BF16 LoRA multi-label charge classification and grounded legal case retrieval"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
