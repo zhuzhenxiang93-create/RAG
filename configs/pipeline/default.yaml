@@ -7,6 +7,22 @@ classifier:
   max_length: 2048
   truncation_strategy: head_tail
 retrieval:
+  mode: hybrid_rrf_rerank
+  hybrid_index: artifacts/indexes/cail2018-v2_1_1
+  candidate_k: 100
+  fusion_top_k: 50
+  rerank_top_k: 20
+  rrf_k: 60
+  label_boost: 0.15
+  reranker_provider: api
+  reranker_model: qwen3-rerank
+  reranker_url_env: DASHSCOPE_RERANK_URL
+  reranker_api_key_env: DASHSCOPE_API_KEY
+  reranker_timeout: 60
+  reranker_instruction: >-
+    Rank Chinese criminal cases by factual conduct, charge elements, and
+    applicable statutes for evidence-grounded legal analysis.
+  # Explicit degradation paths if the hybrid index or reranker cannot load.
   partitioned_index: artifacts/indexes/case_retrieval_by_charge
   bm25_index: artifacts/experiments/bm25_sparse64_eval_v2/index
   statute_bm25_index: artifacts/indexes/statutes_bm25_temporal_v3
