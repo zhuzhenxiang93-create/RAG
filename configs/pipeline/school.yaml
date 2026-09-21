@@ -13,7 +13,6 @@ retrieval:
   fusion_top_k: 50
   rerank_top_k: 20
   rrf_k: 60
-  label_boost: 0.15
   reranker_provider: local
   reranker_model: Qwen/Qwen3-Reranker-0.6B
   reranker_max_length: 2048
