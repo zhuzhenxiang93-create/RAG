@@ -31,4 +31,3 @@ fusion_top_k: 50
 rerank_top_k: 20
 final_top_k: 3
 rrf_k: 60
-label_boost: 0.15
