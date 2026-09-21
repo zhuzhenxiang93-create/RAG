@@ -67,7 +67,6 @@ def build_pipeline(config: dict) -> LegalMindPipeline:
                 hybrid_index,
                 reranker=reranker,
                 rrf_k=int(retrieval_config.get("rrf_k", 60)),
-                label_boost=float(retrieval_config.get("label_boost", 0.15)),
                 fusion_top_k=int(retrieval_config.get("fusion_top_k", 50)),
                 rerank_top_k=int(retrieval_config.get("rerank_top_k", 20)),
                 candidate_k=int(retrieval_config.get("candidate_k", 100)),
