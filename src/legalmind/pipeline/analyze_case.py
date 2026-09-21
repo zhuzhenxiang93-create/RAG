@@ -8,8 +8,11 @@ from legalmind.config import load_yaml
 from legalmind.data.labels import load_label_mapping
 from legalmind.models.inference import ChargeClassifier
 from legalmind.pipeline.core import LegalMindPipeline
+from legalmind.retrieval.index import HybridIndex
 from legalmind.retrieval.lexical import LexicalBM25Index
 from legalmind.retrieval.partitioned import ChargePartitionedRetriever
+from legalmind.retrieval.reranker import APIReranker, CrossEncoderReranker
+from legalmind.retrieval.retriever import HybridRetriever
 
 
 def build_pipeline(config: dict) -> LegalMindPipeline:
@@ -34,12 +37,60 @@ def build_pipeline(config: dict) -> LegalMindPipeline:
             )
     retriever = None
     retrieval_config = config.get("retrieval", {})
+    retrieval_mode = retrieval_config.get("mode", "legacy")
+    hybrid_path = Path(retrieval_config.get("hybrid_index", ""))
     partitioned_path = Path(retrieval_config.get("partitioned_index", ""))
     index_path = Path(retrieval_config.get("bm25_index", ""))
-    if partitioned_path.exists():
+
+    if retrieval_mode == "hybrid_rrf_rerank" and hybrid_path.exists():
+        try:
+            hybrid_index = HybridIndex.load(hybrid_path)
+            reranker = None
+            reranker_provider = retrieval_config.get("reranker_provider", "local")
+            if reranker_provider == "local":
+                reranker = CrossEncoderReranker(
+                    retrieval_config.get("reranker_model", "Qwen/Qwen3-Reranker-0.6B"),
+                    max_length=int(retrieval_config.get("reranker_max_length", 2048)),
+                    batch_size=int(retrieval_config.get("reranker_batch_size", 8)),
+                )
+            elif reranker_provider == "api":
+                reranker = APIReranker(
+                    retrieval_config.get("reranker_model", "qwen3-rerank"),
+                    retrieval_config.get("reranker_url_env", "DASHSCOPE_RERANK_URL"),
+                    retrieval_config.get("reranker_api_key_env", "DASHSCOPE_API_KEY"),
+                    instruction=retrieval_config.get("reranker_instruction", ""),
+                    timeout=float(retrieval_config.get("reranker_timeout", 60)),
+                )
+            elif reranker_provider not in {None, "none", "disabled"}:
+                raise ValueError(f"Unsupported reranker provider: {reranker_provider}")
+            retriever = HybridRetriever(
+                hybrid_index,
+                reranker=reranker,
+                rrf_k=int(retrieval_config.get("rrf_k", 60)),
+                label_boost=float(retrieval_config.get("label_boost", 0.15)),
+                fusion_top_k=int(retrieval_config.get("fusion_top_k", 50)),
+                rerank_top_k=int(retrieval_config.get("rerank_top_k", 20)),
+                candidate_k=int(retrieval_config.get("candidate_k", 100)),
+                final_k=int(retrieval_config.get("top_k", 3)),
+            )
+        except (ImportError, ValueError, FileNotFoundError) as error:
+            initialization_warnings.append(
+                f"hybrid_retrieval_disabled:{type(error).__name__}:{error}"
+            )
+    elif retrieval_mode == "hybrid_rrf_rerank":
+        initialization_warnings.append(
+            f"hybrid_retrieval_index_missing:{hybrid_path}"
+        )
+
+    # Keep the previous sparse routes only as explicit degradation paths.
+    if retriever is None and partitioned_path.exists():
         retriever = ChargePartitionedRetriever.load(partitioned_path)
-    elif index_path.exists():
+        if retrieval_mode == "hybrid_rrf_rerank":
+            initialization_warnings.append("retrieval_fallback:partitioned_bm25")
+    elif retriever is None and index_path.exists():
         retriever = LexicalBM25Index.load(index_path)
+        if retrieval_mode == "hybrid_rrf_rerank":
+            initialization_warnings.append("retrieval_fallback:bm25_only")
     statute_retriever = None
     statute_index_path = Path(config.get("retrieval", {}).get("statute_bm25_index", ""))
     if statute_index_path.exists():
