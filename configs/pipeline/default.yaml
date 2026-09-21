@@ -13,7 +13,6 @@ retrieval:
   fusion_top_k: 50
   rerank_top_k: 20
   rrf_k: 60
-  label_boost: 0.15
   reranker_provider: api
   reranker_model: qwen3-rerank
   reranker_url_env: DASHSCOPE_RERANK_URL
